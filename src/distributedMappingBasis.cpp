@@ -7,7 +7,7 @@ distributedMapping::distributedMapping() : paramsServer()
 {
 	string log_name = name_+"_distributed_mapping";
 	google::InitGoogleLogging(log_name.c_str());
-	string log_dir = "/log";
+	string log_dir = "/out/log";
 	FLAGS_log_dir = std::getenv("HOME") + log_dir;
 	LOG(INFO) << "distributed mapping class initialization" << endl;
 

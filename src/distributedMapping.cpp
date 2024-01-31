@@ -770,6 +770,11 @@ void distributedMapping::outliersFiltering()
 
 			// Update loopclosure ids
 			std::vector<size_t> new_loopclosure_ids;
+			if (10000 > new_loopclosure_ids.max_size())
+			{
+				ROS_ERROR("new_loopclosure_ids.max_size() = %lu", new_loopclosure_ids.max_size());
+			}
+		
 			new_loopclosure_ids.reserve(10000);
 			int number_of_edges = optimizer->currentGraph().size();
 			for(int i = 0; i < number_of_edges; i++)

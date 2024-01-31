@@ -7,8 +7,11 @@ Panels:
         - /Global Options1
         - /links1
         - /links1/TF1/Tree1
+        - /Robot 11/Local Axes1
+        - /Robot 21
+        - /Robot 21/Local Axes1
       Splitter Ratio: 0.4670138955116272
-    Tree Height: 1043
+    Tree Height: 651
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Views
@@ -49,26 +52,54 @@ Visualization Manager:
       Displays:
         - Class: rviz/TF
           Enabled: true
+          Filter (blacklist): ""
+          Filter (whitelist): ""
           Frame Timeout: 999
           Frames:
             All Enabled: false
+            a/body:
+              Value: true
+            a/camera_init:
+              Value: true
+            b/body:
+              Value: true
+            b/camera_init:
+              Value: true
+            c/body:
+              Value: true
+            c/camera_init:
+              Value: true
+            world:
+              Value: true
+          Marker Alpha: 1
           Marker Scale: 3
           Name: TF
           Show Arrows: true
           Show Axes: true
           Show Names: true
           Tree:
-            {}
+            world:
+              a/camera_init:
+                a/body:
+                  {}
+              b/camera_init:
+                b/body:
+                  {}
+              c/camera_init:
+                c/body:
+                  {}
           Update Interval: 0
           Value: true
-        - Class: rviz/Axes
+        - Alpha: 1
+          Class: rviz/Axes
           Enabled: true
           Length: 2
           Name: Global Axes
           Radius: 1
           Reference Frame: world
+          Show Trail: false
           Value: true
-      Enabled: false
+      Enabled: true
       Name: links
     - Class: rviz/Group
       Displays:
@@ -84,7 +115,7 @@ Visualization Manager:
           Color: 138; 226; 52
           Color Transformer: FlatColor
           Decay Time: 0
-          Enabled: false
+          Enabled: true
           Invert Rainbow: false
           Max Color: 255; 255; 255
           Min Color: 0; 0; 0
@@ -99,7 +130,7 @@ Visualization Manager:
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
-          Value: false
+          Value: true
         - Alpha: 1
           Buffer Length: 1
           Class: rviz/Path
@@ -117,6 +148,7 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
+          Queue Size: 10
           Radius: 0.029999999329447746
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
@@ -127,7 +159,7 @@ Visualization Manager:
           Buffer Length: 1
           Class: rviz/Path
           Color: 25; 255; 0
-          Enabled: false
+          Enabled: true
           Head Diameter: 0.30000001192092896
           Head Length: 0.20000000298023224
           Length: 0.6000000238418579
@@ -140,12 +172,13 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: Axes
+          Queue Size: 10
           Radius: 0.4000000059604645
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
           Topic: /a/distributedMapping/localPath
           Unreliable: false
-          Value: false
+          Value: true
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
@@ -223,6 +256,7 @@ Visualization Manager:
           Keep: 1
           Name: Odometry
           Position Tolerance: 0.10000000149011612
+          Queue Size: 10
           Shape:
             Alpha: 1
             Axes Length: 3
@@ -257,6 +291,7 @@ Visualization Manager:
           Keep: 20
           Name: Odometry Path
           Position Tolerance: 0.10000000149011612
+          Queue Size: 10
           Shape:
             Alpha: 1
             Axes Length: 1.600000023841858
@@ -270,13 +305,15 @@ Visualization Manager:
           Topic: /a/lio_sam/mapping/odometry
           Unreliable: false
           Value: false
-        - Class: rviz/Axes
-          Enabled: false
+        - Alpha: 1
+          Class: rviz/Axes
+          Enabled: true
           Length: 3
           Name: Local Axes
           Radius: 1
-          Reference Frame: a/odom
-          Value: false
+          Reference Frame: a/body
+          Show Trail: false
+          Value: true
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
@@ -329,7 +366,7 @@ Visualization Manager:
           Color: 239; 41; 41
           Color Transformer: FlatColor
           Decay Time: 0
-          Enabled: false
+          Enabled: true
           Invert Rainbow: false
           Max Color: 255; 255; 255
           Min Color: 0; 0; 0
@@ -344,7 +381,7 @@ Visualization Manager:
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
-          Value: false
+          Value: true
         - Alpha: 1
           Buffer Length: 1
           Class: rviz/Path
@@ -362,6 +399,7 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
+          Queue Size: 10
           Radius: 0.029999999329447746
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
@@ -372,7 +410,7 @@ Visualization Manager:
           Buffer Length: 1
           Class: rviz/Path
           Color: 239; 41; 41
-          Enabled: false
+          Enabled: true
           Head Diameter: 0.30000001192092896
           Head Length: 0.20000000298023224
           Length: 0.6000000238418579
@@ -385,12 +423,13 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: Axes
+          Queue Size: 10
           Radius: 0.4000000059604645
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
           Topic: /b/distributedMapping/localPath
           Unreliable: false
-          Value: false
+          Value: true
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
@@ -468,6 +507,7 @@ Visualization Manager:
           Keep: 1
           Name: Odometry
           Position Tolerance: 0.10000000149011612
+          Queue Size: 10
           Shape:
             Alpha: 1
             Axes Length: 3
@@ -502,6 +542,7 @@ Visualization Manager:
           Keep: 20
           Name: Odometry Path
           Position Tolerance: 0.10000000149011612
+          Queue Size: 10
           Shape:
             Alpha: 1
             Axes Length: 1.600000023841858
@@ -515,13 +556,15 @@ Visualization Manager:
           Topic: /b/lio_sam/mapping/odometry
           Unreliable: false
           Value: false
-        - Class: rviz/Axes
-          Enabled: false
+        - Alpha: 1
+          Class: rviz/Axes
+          Enabled: true
           Length: 3
           Name: Local Axes
           Radius: 1
-          Reference Frame: b/odom
-          Value: false
+          Reference Frame: b/body
+          Show Trail: false
+          Value: true
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
@@ -574,7 +617,7 @@ Visualization Manager:
           Color: 114; 159; 207
           Color Transformer: FlatColor
           Decay Time: 0
-          Enabled: false
+          Enabled: true
           Invert Rainbow: false
           Max Color: 255; 255; 255
           Min Color: 0; 0; 0
@@ -589,7 +632,7 @@ Visualization Manager:
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
-          Value: false
+          Value: true
         - Alpha: 1
           Buffer Length: 1
           Class: rviz/Path
@@ -607,6 +650,7 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
+          Queue Size: 10
           Radius: 0.029999999329447746
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
@@ -617,7 +661,7 @@ Visualization Manager:
           Buffer Length: 1
           Class: rviz/Path
           Color: 52; 101; 164
-          Enabled: false
+          Enabled: true
           Head Diameter: 0.30000001192092896
           Head Length: 0.20000000298023224
           Length: 0.6000000238418579
@@ -630,12 +674,13 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: Axes
+          Queue Size: 10
           Radius: 0.4000000059604645
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
           Topic: /c/distributedMapping/localPath
           Unreliable: false
-          Value: false
+          Value: true
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
@@ -713,6 +758,7 @@ Visualization Manager:
           Keep: 1
           Name: Odometry
           Position Tolerance: 0.10000000149011612
+          Queue Size: 10
           Shape:
             Alpha: 1
             Axes Length: 3
@@ -747,6 +793,7 @@ Visualization Manager:
           Keep: 20
           Name: Odometry Path
           Position Tolerance: 0.20000000298023224
+          Queue Size: 10
           Shape:
             Alpha: 1
             Axes Length: 1.600000023841858
@@ -788,13 +835,15 @@ Visualization Manager:
           Use Fixed Frame: true
           Use rainbow: true
           Value: false
-        - Class: rviz/Axes
-          Enabled: false
+        - Alpha: 1
+          Class: rviz/Axes
+          Enabled: true
           Length: 3
           Name: Local Axes
           Radius: 1
-          Reference Frame: c/odom
-          Value: false
+          Reference Frame: c/body
+          Show Trail: false
+          Value: true
         - Class: rviz/MarkerArray
           Enabled: true
           Marker Topic: /c/distributedMapping/loopClosureConstraints
@@ -852,6 +901,7 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
+          Queue Size: 10
           Radius: 0.029999999329447746
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
@@ -875,6 +925,7 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: Axes
+          Queue Size: 10
           Radius: 0.4000000059604645
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
@@ -958,6 +1009,7 @@ Visualization Manager:
           Keep: 1
           Name: Odometry
           Position Tolerance: 0.10000000149011612
+          Queue Size: 10
           Shape:
             Alpha: 1
             Axes Length: 3
@@ -992,6 +1044,7 @@ Visualization Manager:
           Keep: 20
           Name: Odometry Path
           Position Tolerance: 0.20000000298023224
+          Queue Size: 10
           Shape:
             Alpha: 1
             Axes Length: 1.600000023841858
@@ -1033,12 +1086,14 @@ Visualization Manager:
           Use Fixed Frame: true
           Use rainbow: true
           Value: false
-        - Class: rviz/Axes
+        - Alpha: 1
+          Class: rviz/Axes
           Enabled: false
           Length: 3
           Name: Local Axes
           Radius: 1
           Reference Frame: c/odom
+          Show Trail: false
           Value: false
         - Class: rviz/MarkerArray
           Enabled: true
@@ -1048,7 +1103,7 @@ Visualization Manager:
             {}
           Queue Size: 1
           Value: true
-      Enabled: true
+      Enabled: false
       Name: Robot 3
     - Class: rviz/Group
       Displays:
@@ -1097,6 +1152,7 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
+          Queue Size: 10
           Radius: 0.029999999329447746
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
@@ -1120,6 +1176,7 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: Axes
+          Queue Size: 10
           Radius: 0.4000000059604645
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
@@ -1203,6 +1260,7 @@ Visualization Manager:
           Keep: 1
           Name: Odometry
           Position Tolerance: 0.10000000149011612
+          Queue Size: 10
           Shape:
             Alpha: 1
             Axes Length: 3
@@ -1237,6 +1295,7 @@ Visualization Manager:
           Keep: 20
           Name: Odometry Path
           Position Tolerance: 0.20000000298023224
+          Queue Size: 10
           Shape:
             Alpha: 1
             Axes Length: 1.600000023841858
@@ -1278,23 +1337,24 @@ Visualization Manager:
           Use Fixed Frame: true
           Use rainbow: true
           Value: false
-        - Class: rviz/Axes
+        - Alpha: 1
+          Class: rviz/Axes
           Enabled: false
           Length: 3
           Name: Local Axes
           Radius: 1
           Reference Frame: c/odom
+          Show Trail: false
           Value: false
         - Class: rviz/MarkerArray
           Enabled: true
           Marker Topic: /e/distributedMapping/loopClosureConstraints
           Name: Loop Closure Constraints
           Namespaces:
-            loop_constraints: true
-            loop_nodes: true
+            {}
           Queue Size: 1
           Value: true
-      Enabled: true
+      Enabled: false
       Name: Robot 4
     - Class: rviz/Group
       Displays:
@@ -1343,6 +1403,7 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
+          Queue Size: 10
           Radius: 0.029999999329447746
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
@@ -1366,6 +1427,7 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: Axes
+          Queue Size: 10
           Radius: 0.4000000059604645
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
@@ -1449,6 +1511,7 @@ Visualization Manager:
           Keep: 1
           Name: Odometry
           Position Tolerance: 0.10000000149011612
+          Queue Size: 10
           Shape:
             Alpha: 1
             Axes Length: 3
@@ -1483,6 +1546,7 @@ Visualization Manager:
           Keep: 20
           Name: Odometry Path
           Position Tolerance: 0.20000000298023224
+          Queue Size: 10
           Shape:
             Alpha: 1
             Axes Length: 1.600000023841858
@@ -1524,12 +1588,14 @@ Visualization Manager:
           Use Fixed Frame: true
           Use rainbow: true
           Value: false
-        - Class: rviz/Axes
+        - Alpha: 1
+          Class: rviz/Axes
           Enabled: false
           Length: 3
           Name: Local Axes
           Radius: 1
           Reference Frame: c/odom
+          Show Trail: false
           Value: false
         - Class: rviz/MarkerArray
           Enabled: true
@@ -1539,7 +1605,7 @@ Visualization Manager:
             {}
           Queue Size: 1
           Value: true
-      Enabled: true
+      Enabled: false
       Name: Robot 5
     - Class: rviz/Group
       Displays:
@@ -1588,6 +1654,7 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
+          Queue Size: 10
           Radius: 0.029999999329447746
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
@@ -1611,6 +1678,7 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: Axes
+          Queue Size: 10
           Radius: 0.4000000059604645
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
@@ -1694,6 +1762,7 @@ Visualization Manager:
           Keep: 1
           Name: Odometry
           Position Tolerance: 0.10000000149011612
+          Queue Size: 10
           Shape:
             Alpha: 1
             Axes Length: 3
@@ -1728,6 +1797,7 @@ Visualization Manager:
           Keep: 20
           Name: Odometry Path
           Position Tolerance: 0.20000000298023224
+          Queue Size: 10
           Shape:
             Alpha: 1
             Axes Length: 1.600000023841858
@@ -1769,12 +1839,14 @@ Visualization Manager:
           Use Fixed Frame: true
           Use rainbow: true
           Value: false
-        - Class: rviz/Axes
+        - Alpha: 1
+          Class: rviz/Axes
           Enabled: false
           Length: 3
           Name: Local Axes
           Radius: 1
           Reference Frame: c/odom
+          Show Trail: false
           Value: false
         - Class: rviz/MarkerArray
           Enabled: true
@@ -1784,7 +1856,7 @@ Visualization Manager:
             {}
           Queue Size: 1
           Value: true
-      Enabled: true
+      Enabled: false
       Name: Robot 6
     - Class: rviz/Group
       Displays:
@@ -1833,6 +1905,7 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
+          Queue Size: 10
           Radius: 0.029999999329447746
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
@@ -1856,6 +1929,7 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: Axes
+          Queue Size: 10
           Radius: 0.4000000059604645
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
@@ -1939,6 +2013,7 @@ Visualization Manager:
           Keep: 1
           Name: Odometry
           Position Tolerance: 0.10000000149011612
+          Queue Size: 10
           Shape:
             Alpha: 1
             Axes Length: 3
@@ -1973,6 +2048,7 @@ Visualization Manager:
           Keep: 20
           Name: Odometry Path
           Position Tolerance: 0.20000000298023224
+          Queue Size: 10
           Shape:
             Alpha: 1
             Axes Length: 1.600000023841858
@@ -2014,12 +2090,14 @@ Visualization Manager:
           Use Fixed Frame: true
           Use rainbow: true
           Value: false
-        - Class: rviz/Axes
+        - Alpha: 1
+          Class: rviz/Axes
           Enabled: false
           Length: 3
           Name: Local Axes
           Radius: 1
           Reference Frame: c/odom
+          Show Trail: false
           Value: false
         - Class: rviz/MarkerArray
           Enabled: true
@@ -2029,7 +2107,7 @@ Visualization Manager:
             {}
           Queue Size: 1
           Value: true
-      Enabled: true
+      Enabled: false
       Name: Robot 7
     - Class: rviz/Group
       Displays:
@@ -2078,6 +2156,7 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
+          Queue Size: 10
           Radius: 0.029999999329447746
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
@@ -2101,6 +2180,7 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: Axes
+          Queue Size: 10
           Radius: 0.4000000059604645
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
@@ -2184,6 +2264,7 @@ Visualization Manager:
           Keep: 1
           Name: Odometry
           Position Tolerance: 0.10000000149011612
+          Queue Size: 10
           Shape:
             Alpha: 1
             Axes Length: 3
@@ -2218,6 +2299,7 @@ Visualization Manager:
           Keep: 20
           Name: Odometry Path
           Position Tolerance: 0.20000000298023224
+          Queue Size: 10
           Shape:
             Alpha: 1
             Axes Length: 1.600000023841858
@@ -2259,12 +2341,14 @@ Visualization Manager:
           Use Fixed Frame: true
           Use rainbow: true
           Value: false
-        - Class: rviz/Axes
+        - Alpha: 1
+          Class: rviz/Axes
           Enabled: false
           Length: 3
           Name: Local Axes
           Radius: 1
           Reference Frame: c/odom
+          Show Trail: false
           Value: false
         - Class: rviz/MarkerArray
           Enabled: true
@@ -2279,11 +2363,10 @@ Visualization Manager:
           Marker Topic: /distributedMapping/loopClosureConstraints
           Name: Loop Closure Constraints
           Namespaces:
-            loop_constraints: true
-            loop_nodes: true
+            {}
           Queue Size: 1
           Value: true
-      Enabled: true
+      Enabled: false
       Name: Robot 8
   Enabled: true
   Global Options:
@@ -2302,39 +2385,39 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 323.97869873046875
+      Distance: 340.9654235839844
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
+      Field of View: 0.7853981852531433
       Focal Point:
-        X: 35.723201751708984
-        Y: -4.355930328369141
-        Z: 48.070064544677734
+        X: -4.245702266693115
+        Y: -9.398091316223145
+        Z: 28.534425735473633
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5697963237762451
+      Pitch: 1.1947966814041138
       Target Frame: world
-      Value: Orbit (rviz)
-      Yaw: 4.9507904052734375
+      Yaw: 2.960785388946533
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 1385
+  Height: 1017
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd0000000400000000000001a90000050ffc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb0000000a0049006d006100670065000000002e000001340000000000000000fb000000100044006900730070006c006100790073010000003d0000050f000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730000000286000000a70000005c00ffffff00000001000001110000050ffc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000003d0000050f000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004b000000040fc0100000002fb0000000800540069006d00650000000000000004b00000000000000000fb0000000800540069006d00650100000000000004500000000000000000000006f70000050f00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000400000000000001a900000391fc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006e00fffffffb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb0000000a0049006d006100670065000000002e000001340000000000000000fb000000100044006900730070006c006100790073010000004700000391000000f100fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730000000286000000a70000006e00ffffff000000010000011100000391fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000004700000391000000c200fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004b000000040fc0100000002fb0000000800540069006d00650000000000000004b00000000000000000fb0000000800540069006d00650100000000000004500000000000000000000004820000039100000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Tool Properties:
     collapsed: false
   Views:
     collapsed: false
-  Width: 2493
-  X: 67
-  Y: 27
+  Width: 1866
+  X: 311
+  Y: 83

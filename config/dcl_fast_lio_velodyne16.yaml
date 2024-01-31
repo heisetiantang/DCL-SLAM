@@ -5,11 +5,11 @@ dcl_slam: {
 
   # lidar configuration
   sensor: velodyne,                       # lidar type, support 'velodyne 16/64' or 'livox 6'
-  n_scan: 16,                             # number of lidar channel (i.e., 6, 16, 64)
+  n_scan: 32,                             # number of lidar channel (i.e., 6, 16, 64)
 
   # CPU params
-  onboard_cpu_cores_num: 4,               # cores number of onboard unit
-  loop_closure_process_interval: 0.01,    # interval of detecting loop (in second)
+  onboard_cpu_cores_num: 16,               # cores number of onboard unit
+  loop_closure_process_interval: 0.05,    # interval of detecting loop (in second)
   map_publish_interval: 10.0,             # interval of publish global maps (in second)
   mapping_process_interval: 0.02,         # interval of optmization (in second)
 
@@ -51,7 +51,7 @@ common:
     
 preprocess:
     lidar_type: 2                # 1 for Livox serials LiDAR, 2 for Velodyne LiDAR, 3 for ouster LiDAR, 
-    scan_line: 16
+    scan_line: 32
     scan_rate: 10                # only need to be set for velodyne, unit: Hz,
     timestamp_unit: 2            # the unit of time/t field in the PointCloud2 rostopic: 0-second, 1-milisecond, 2-microsecond, 3-nanosecond.
     blind: 2
@@ -74,9 +74,9 @@ mapping:
                    0, 0, 1]
 
 publish:
-    path_en:  false
-    scan_publish_en:  true       # false: close all the point cloud output
-    dense_publish_en: true       # false: low down the points number in a global-frame point clouds scan.
+    path_en:  true
+    scan_publish_en:  false       # false: close all the point cloud output
+    dense_publish_en: false       # false: low down the points number in a global-frame point clouds scan.
     scan_bodyframe_pub_en: true  # true: output the point cloud scans in IMU-body-frame
 
 pcd_save:

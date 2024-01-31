@@ -1,0 +1,42 @@
+<launch>
+ 	<arg name="lioType" default="1"/>
+	<arg name="robotPrefix" default="a"/>
+	<arg name="respawnValue" default="false"/>
+
+	<group if="$(eval arg('lioType') == 1)" ns="$(arg robotPrefix)">
+		<!-- parameters -->
+		<rosparam file="$(find dcl_slam)/config/dcl_lio_sam_vlp16_params_$(arg robotPrefix).yaml" command="load" />
+		<!-- <rosparam file="$(find dcl_slam)/config/dcl_lio_sam_vlp16_params_a.yaml" command="load" /> -->
+
+		<!--- lio-sam main nodes -->
+		<arg name="project" default="dcl_lio_sam"/>
+		<node pkg="$(arg project)" type="$(arg project)_imuPreintegration" name="$(arg project)_imuPreintegration" output="screen" respawn="$(arg respawnValue)"/>
+		<node pkg="$(arg project)" type="$(arg project)_imageProjection" name="$(arg project)_imageProjection" output="screen" respawn="$(arg respawnValue)"/>
+		<node pkg="$(arg project)" type="$(arg project)_featureExtraction" name="$(arg project)_featureExtraction" output="screen" respawn="$(arg respawnValue)"/>
+		<node pkg="$(arg project)" type="$(arg project)_mapOptmization" name="$(arg project)_mapOptmization" output="screen" respawn="$(arg respawnValue)"/>
+		
+		<!--- Robot State TF -->
+		<param name="robot_description" command="$(find xacro)/xacro $(find dcl_slam)/config/lio_sam_robot.urdf.xacro --inorder" />
+		<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="$(arg respawnValue)">
+			<param name="tf_prefix" value="$(arg robotPrefix)"/>
+		</node>
+
+		<!-- <node pkg="rviz" type="rviz" name="dcl_rviz_$(arg robotPrefix)" args="-d $(find dcl_slam)/config/dcl_rviz_$(arg robotPrefix).rviz" /> -->
+	</group>
+
+	<group if="$(eval arg('lioType') == 2)" ns="$(arg robotPrefix)">
+		<!-- parameters -->
+		<rosparam command="load" file="$(find dcl_slam)/config/dcl_fast_lio_velodyne16.yaml" />
+		<param name="feature_extract_enable" type="bool" value="0"/>
+		<param name="point_filter_num" type="int" value="1"/>
+		<param name="max_iteration" type="int" value="3" />
+		<param name="filter_size_corner" type="double" value="0.2" />
+		<param name="filter_size_surf" type="double" value="0.2" />
+		<param name="filter_size_map" type="double" value="0.2" />
+		<param name="cube_side_length" type="double" value="1000" />
+		<param name="runtime_pos_log_enable" type="bool" value="0" />
+		
+		<!--- fast-lio main node -->
+		<node pkg="front_slam" type="dclFront" name="dclFront" output="screen" /> 
+	</group>
+</launch>

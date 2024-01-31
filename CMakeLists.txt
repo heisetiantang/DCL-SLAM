@@ -89,3 +89,12 @@ add_library(dcl_slam
   src/m2dpDescriptor.cpp)
 target_link_libraries(dcl_slam ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${OpenCV_LIBRARIES} ${OpenMP_CXX_FLAGS} ${libnabo_LIBRARIES})
 
+add_executable(${PROJECT_NAME}_loopVisualizationNode src/loopVisualizationNode.cpp)
+add_dependencies(${PROJECT_NAME}_loopVisualizationNode ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_compile_options(${PROJECT_NAME}_loopVisualizationNode PRIVATE ${OpenMP_CXX_FLAGS})
+target_link_libraries(${PROJECT_NAME}_loopVisualizationNode ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${OpenCV_LIBRARIES} ${OpenMP_CXX_FLAGS} ${libnabo_LIBRARIES})
+add_executable(${PROJECT_NAME}_ShowGT src/ShowGT.cpp)
+add_dependencies(${PROJECT_NAME}_ShowGT ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_compile_options(${PROJECT_NAME}_ShowGT PRIVATE ${OpenMP_CXX_FLAGS})
+target_link_libraries(${PROJECT_NAME}_ShowGT ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${OpenCV_LIBRARIES} ${OpenMP_CXX_FLAGS} ${libnabo_LIBRARIES})
+
