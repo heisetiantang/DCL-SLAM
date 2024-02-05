@@ -81,15 +81,12 @@
 
 	<arg name="SYSU_bag" value="$(env HOME)/py_shall/qy/test_abc.bag"/>
 		
-		<remap from="/a/scan_undistorted" to="/a/velodyne_points"/>
+		<!-- <remap from="/a/scan_undistorted" to="/a/velodyne_points"/>
 		<remap from="/b/scan_undistorted" to="/b/velodyne_points"/>
 		<remap from="/c/scan_undistorted" to="/c/velodyne_points"/>
-		<!-- <remap from="/a/b/imu/data" to="/a/imu/data"/>
-		<remap from="/b/b/imu/data" to="/b/imu/data"/>
-		<remap from="/c/b/imu/data" to="/c/imu/data"/> -->
 		<remap from="/a/odom" to="/a/odom"/>
 		<remap from="/b/odom" to="/b/odom"/>
-		<remap from="/c/odom" to="/c/odom"/>  
+		<remap from="/c/odom" to="/c/odom"/>   -->
 
 	<node name="player2" pkg="rosbag" type="play" output="screen" args="-r 1 -q -d 2 $(arg SYSU_bag)"/>
 
