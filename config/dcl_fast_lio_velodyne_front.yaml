@@ -1,0 +1,85 @@
+dcl_slam: {
+  # Frames
+  world_frame: "world",                   # global frame
+  odom_frame: "camera_init",               # local frame
+
+  # lidar configuration
+  sensor: velodyne,                       # lidar type, support 'velodyne 16/64' or 'livox 6'
+  n_scan: 32,                             # number of lidar channel (i.e., 6, 16, 64)
+
+  # CPU params
+  onboard_cpu_cores_num: 16,               # cores number of onboard unit
+  loop_closure_process_interval: 0.05,    # interval of detecting loop (in second)
+  map_publish_interval: 10.0,             # interval of publish global maps (in second)
+  mapping_process_interval: 0.02,         # interval of optmization (in second)
+
+  # keyframe params
+  keyframe_distance_threshold: 1.0,       # keyframe distance threshold (in meter)
+  keyframe_angle_threshold: 0.2,          # keyframe angle threshold (in rad)
+
+  # mapping
+  global_optmization_enable: true,        # enable distributed DGS
+  use_between_noise: true,                # use between noise flag
+  optmization_maximum_iteration: 30,      # maximum iterations time of optimization
+  use_pcm: true,                          # enable pairwise consistency maximization (with descriptor_distance_threshold=0.5)
+  pcm_threshold: 0.5,                     # confidence probability for PCM (i.e., 0.01, 0.05, 0.1, 0.25, 0.5, 0.75)
+
+  # downsample
+  descript_leaf_size: 0.1,                # descriptor downsample rate (default 0.1)
+  map_leaf_size: 0.4,                     # scan to map matching downsample rate (default 0.4)
+
+  # loop closure
+  intra_robot_loop_closure_enable: false, # enable to search intra-robot loop closre with global descriptor
+  inter_robot_loop_closure_enable: true,  # enable to search intra-robot loop closre with global descriptor
+  descriptor_type: "LidarIris",           # descriptor type: ScanContext, LidarIris, M2DP
+  knn_candidates: 6,                      # k nearest neighbor search of row key
+  match_mode: 2,                          # iris-feature matching mode, (i.e., 0, 1, 2; default 2) 
+  descriptor_distance_threshold: 0.4,     # iris-feature matching threshold
+  exclude_recent_frame_num: 50,           # exclude recent keyframe in intra-robot loop closure
+  search_radius: 40.0,                    # radius of radius search based intra-robot loop closure
+  history_keyframe_search_num: 16,        # number of history frames in submap for scan-to-map matching
+  fitness_score_threshold: 0.2,           # ICP fitness score threshold
+  ransac_maximum_iteration: 2000,         # RANSAC maximum iteration time
+  ransac_threshold: 0.3,                  # RANSAC threshold (rate: [0 1])
+  ransac_outlier_reject_threshold: 0.35,  # RANSAC outlier rejection distancce
+}
+
+common:
+    lid_topic:  "velodyne_points"
+    imu_topic:  "imu/data"
+    time_sync_en: true         # ONLY turn on when external time synchronization is really not possible
+    
+preprocess:
+    lidar_type: 2                # 1 for Livox serials LiDAR, 2 for Velodyne LiDAR, 3 for ouster LiDAR, 
+    scan_line: 32
+    scan_rate: 10                # only need to be set for velodyne, unit: Hz,
+    timestamp_unit: 2            # the unit of time/t field in the PointCloud2 rostopic: 0-second, 1-milisecond, 2-microsecond, 3-nanosecond.
+    blind: 2
+
+mapping:
+    acc_cov: 0.1
+    gyr_cov: 0.1
+    b_acc_cov: 0.0001
+    b_gyr_cov: 0.0001
+    fov_degree:    180
+    det_range:     100.0
+    extrinsic_est_en:  true      # true: enable the online estimation of IMU-LiDAR extrinsic,
+    # extrinsic_T: [-8.086759e-01, 3.195559e-01, -7.997231e-01]
+    # extrinsic_R: [ 9.999976e-01, 7.553071e-04, -2.035826e-03,
+    #               -7.854027e-04, 9.998898e-01, -1.482298e-02,
+    #               2.024406e-03, 1.482454e-02, 9.998881e-01]
+    extrinsic_T: [ 0, 0, 0.00]
+    extrinsic_R: [ 1, 0, 0, 
+                   0, 1, 0, 
+                   0, 0, 1]
+
+publish:
+    path_en:  false               # false: close the path output
+    scan_publish_en:  false       # false: close all the point cloud output
+    dense_publish_en: false       # false: low down the points number in a global-frame point clouds scan.
+    scan_bodyframe_pub_en: false  # true: output the point cloud scans in IMU-body-frame
+
+pcd_save:
+    pcd_save_en: false
+    interval: -1                 # how many LiDAR frames saved in each pcd file; 
+                                 # -1 : all frames will be saved in ONE pcd file, may lead to memory crash when having too much frames.

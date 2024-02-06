@@ -26,7 +26,7 @@
 
 	<group if="$(eval arg('lioType') == 2)" ns="$(arg robotPrefix)">
 		<!-- parameters -->
-		<rosparam command="load" file="$(find dcl_slam)/config/dcl_fast_lio_velodyne16.yaml" />
+		<rosparam command="load" file="$(find dcl_slam)/config/dcl_fast_lio_velodyne_front.yaml" />
 		<param name="feature_extract_enable" type="bool" value="0"/>
 		<param name="point_filter_num" type="int" value="1"/>
 		<param name="max_iteration" type="int" value="3" />
