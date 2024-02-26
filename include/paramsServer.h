@@ -58,6 +58,7 @@ struct singleRobot {
 	dcl_slam::neighbor_estimate estimate_msg; // pose and rotation estimate msg
 	pcl::PointCloud<PointPose3D>::Ptr keyframe_cloud; // recent keyframe pointcloud
 	std::vector<pcl::PointCloud<PointPose3D>> keyframe_cloud_array; // and its array
+	
 	Pose3 piror_odom; // piror factor
 };
 

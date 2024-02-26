@@ -1,11 +1,11 @@
 #include "distributedMapping.h"
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	class distributedMapping: constructor and destructor
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 distributedMapping::distributedMapping() : paramsServer()
 {
-	string log_name = name_+"_distributed_mapping";
+	string log_name = name_ + "_distributed_mapping";
 	google::InitGoogleLogging(log_name.c_str());
 	string log_dir = "/out/log";
 	FLAGS_log_dir = std::getenv("HOME") + log_dir;
@@ -13,7 +13,7 @@ distributedMapping::distributedMapping() : paramsServer()
 
 	/*** robot team ***/
 	singleRobot robot; // each robot
-	for(int it = 0; it < number_of_robots_; it++)
+	for (int it = 0; it < number_of_robots_; it++)
 	{
 		/*** robot information ***/
 		robot.id_ = it; // robot ID and name
@@ -23,65 +23,65 @@ distributedMapping::distributedMapping() : paramsServer()
 
 		/*** ros subscriber and publisher ***/
 		// this robot
-		if(it == id_)
+		if (it == id_)
 		{
 			// enable descriptor for detecting loop
-			if(intra_robot_loop_closure_enable_ || inter_robot_loop_closure_enable_)
+			if (intra_robot_loop_closure_enable_ || inter_robot_loop_closure_enable_)
 			{
 				// publish global descriptor
 				robot.pub_descriptors = nh.advertise<dcl_slam::global_descriptor>(
-					robot.name_+"/distributedMapping/globalDescriptors", 5);
+					robot.name_ + "/distributedMapping/globalDescriptors", 5);
 				// publish loop infomation
 				robot.pub_loop_info = nh.advertise<dcl_slam::loop_info>(
-					robot.name_+"/distributedMapping/loopInfo", 5);
+					robot.name_ + "/distributedMapping/loopInfo", 5);
 			}
-			
+
 			// enable DGS
-			if(global_optmization_enable_)
+			if (global_optmization_enable_)
 			{
 				robot.pub_optimization_state = nh.advertise<std_msgs::Int8>(
-					robot.name_+"/distributedMapping/optimizationState", 50);
+					robot.name_ + "/distributedMapping/optimizationState", 50);
 				robot.pub_rotation_estimate_state = nh.advertise<std_msgs::Int8>(
-					robot.name_+"/distributedMapping/rotationEstimateState", 50);
+					robot.name_ + "/distributedMapping/rotationEstimateState", 50);
 				robot.pub_pose_estimate_state = nh.advertise<std_msgs::Int8>(
-					robot.name_+"/distributedMapping/poseEstimateState", 50);
+					robot.name_ + "/distributedMapping/poseEstimateState", 50);
 				robot.pub_neighbor_rotation_estimates = nh.advertise<dcl_slam::neighbor_estimate>(
-					robot.name_+"/distributedMapping/neighborRotationEstimates", 50);
+					robot.name_ + "/distributedMapping/neighborRotationEstimates", 50);
 				robot.pub_neighbor_pose_estimates = nh.advertise<dcl_slam::neighbor_estimate>(
-					robot.name_+"/distributedMapping/neighborPoseEstimates", 50);
+					robot.name_ + "/distributedMapping/neighborPoseEstimates", 50);
 			}
 		}
 		// other robot
 		else
 		{
-			if(intra_robot_loop_closure_enable_ || inter_robot_loop_closure_enable_)
+			if (intra_robot_loop_closure_enable_ || inter_robot_loop_closure_enable_)
 			{
 				// subscribe global descriptor
 				robot.sub_descriptors = nh.subscribe<dcl_slam::global_descriptor>(
-					robot.name_+"/distributedMapping/globalDescriptors", 50,
+					robot.name_ + "/distributedMapping/globalDescriptors", 50,
 					boost::bind(&distributedMapping::globalDescriptorHandler, this, _1, it));
 				// subscribe loop infomation
 				robot.sub_loop_info = nh.subscribe<dcl_slam::loop_info>(
-					robot.name_+"/distributedMapping/loopInfo", 50,
+					robot.name_ + "/distributedMapping/loopInfo", 50,
 					boost::bind(&distributedMapping::loopInfoHandler, this, _1, it));
 			}
 
-			if(global_optmization_enable_)
+			if (global_optmization_enable_)
 			{
 				robot.sub_optimization_state = nh.subscribe<std_msgs::Int8>(
-					robot.name_+"/distributedMapping/optimizationState", 50,
+					robot.name_ + "/distributedMapping/optimizationState", 50,
 					boost::bind(&distributedMapping::optStateHandler, this, _1, it));
 				robot.sub_rotation_estimate_state = nh.subscribe<std_msgs::Int8>(
-					robot.name_+"/distributedMapping/rotationEstimateState", 50,
+					robot.name_ + "/distributedMapping/rotationEstimateState", 50,
 					boost::bind(&distributedMapping::rotationStateHandler, this, _1, it));
 				robot.sub_pose_estimate_state = nh.subscribe<std_msgs::Int8>(
-					robot.name_+"/distributedMapping/poseEstimateState", 50,
+					robot.name_ + "/distributedMapping/poseEstimateState", 50,
 					boost::bind(&distributedMapping::poseStateHandler, this, _1, it));
 				robot.sub_neighbor_rotation_estimates = nh.subscribe<dcl_slam::neighbor_estimate>(
-					robot.name_+"/distributedMapping/neighborRotationEstimates", 50,
+					robot.name_ + "/distributedMapping/neighborRotationEstimates", 50,
 					boost::bind(&distributedMapping::neighborRotationHandler, this, _1, it));
 				robot.sub_neighbor_pose_estimates = nh.subscribe<dcl_slam::neighbor_estimate>(
-					robot.name_+"/distributedMapping/neighborPoseEstimates", 50,
+					robot.name_ + "/distributedMapping/neighborPoseEstimates", 50,
 					boost::bind(&distributedMapping::neighborPoseHandler, this, _1, it));
 			}
 		}
@@ -117,8 +117,12 @@ distributedMapping::distributedMapping() : paramsServer()
 	pub_keypose_cloud = nh.advertise<sensor_msgs::PointCloud2>(
 		"distributedMapping/keyposeCloud", 1);
 
+	// 发布拷贝出来的全局地图
+	pubGlobal_all = nh.advertise<sensor_msgs::PointCloud2>(
+		"distributedMapping/copyGlobalMap", 1);
+
 	/*** message information ***/
-	cloud_for_decript_ds.reset(new pcl::PointCloud<PointPose3D>()); 
+	cloud_for_decript_ds.reset(new pcl::PointCloud<PointPose3D>());
 
 	/*** downsample filter ***/
 	downsample_filter_for_descriptor.setLeafSize(descript_leaf_size_, descript_leaf_size_, descript_leaf_size_);
@@ -138,20 +142,20 @@ distributedMapping::distributedMapping() : paramsServer()
 
 	intra_robot_loop_close_flag = false;
 
-	if(descriptor_type_num_ == DescriptorType::ScanContext)
+	if (descriptor_type_num_ == DescriptorType::ScanContext)
 	{
 		keyframe_descriptor = unique_ptr<scan_descriptor>(new scan_context_descriptor(
 			20, 60, knn_candidates_, descriptor_distance_threshold_, 0, 80.0,
 			exclude_recent_frame_num_, number_of_robots_, id_));
 	}
-	else if(descriptor_type_num_ == DescriptorType::LidarIris)
+	else if (descriptor_type_num_ == DescriptorType::LidarIris)
 	{
 		keyframe_descriptor = unique_ptr<scan_descriptor>(new lidar_iris_descriptor(
 			iris_row_, iris_column_, n_scan_, descriptor_distance_threshold_,
 			exclude_recent_frame_num_, match_mode_, knn_candidates_, 4, 18, 1.6, 0.75,
 			number_of_robots_, id_));
 	}
-	else if(descriptor_type_num_ == DescriptorType::M2DP)
+	else if (descriptor_type_num_ == DescriptorType::M2DP)
 	{
 		keyframe_descriptor = unique_ptr<scan_descriptor>(new m2dp_descriptor(
 			16, 8, 4, 16, number_of_robots_, id_));
@@ -177,7 +181,7 @@ distributedMapping::distributedMapping() : paramsServer()
 
 	keyposes_cloud_3d.reset(new pcl::PointCloud<PointPose3D>());
 	keyposes_cloud_6d.reset(new pcl::PointCloud<PointPose6D>());
-	
+
 	/*** distributed pose graph optmazition ***/
 	optimizer = boost::shared_ptr<distributed_mapper::DistributedMapper>(
 		new distributed_mapper::DistributedMapper(id_ + 'a'));
@@ -236,16 +240,16 @@ distributedMapping::distributedMapping() : paramsServer()
 	rejected_keys.clear();
 	measurements_rejected_num = 0;
 	measurements_accepted_num = 0;
-	
-	optimizer->setUseBetweenNoiseFlag(use_between_noise_); // use between noise or not in optimizePoses
-	optimizer->setUseLandmarksFlag(use_landmarks_); // use landmarks
-	optimizer->loadSubgraphAndCreateSubgraphEdge(graph_values_vec); // load subgraphs
+
+	optimizer->setUseBetweenNoiseFlag(use_between_noise_);				   // use between noise or not in optimizePoses
+	optimizer->setUseLandmarksFlag(use_landmarks_);						   // use landmarks
+	optimizer->loadSubgraphAndCreateSubgraphEdge(graph_values_vec);		   // load subgraphs
 	optimizer->setVerbosity(distributed_mapper::DistributedMapper::ERROR); // verbosity level
 	optimizer->setFlaggedInit(use_flagged_init_);
 	optimizer->setUpdateType(distributed_mapper::DistributedMapper::incUpdate);
 	optimizer->setGamma(gamma_);
 
-	if(global_optmization_enable_)
+	if (global_optmization_enable_)
 	{
 		distributed_mapping_thread = nh.createTimer(
 			ros::Duration(mapping_process_interval_), &distributedMapping::run, this);
@@ -256,10 +260,9 @@ distributedMapping::distributedMapping() : paramsServer()
 
 distributedMapping::~distributedMapping()
 {
-
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	class distributedMapping: other function
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void distributedMapping::lockOnCall()
@@ -282,7 +285,7 @@ pcl::PointCloud<PointPose6D>::Ptr distributedMapping::getLocalKeyposesCloud6D()
 	return keyposes_cloud_6d;
 }
 
-pcl::PointCloud<PointPose3D> distributedMapping::getLocalKeyframe(const int& index)
+pcl::PointCloud<PointPose3D> distributedMapping::getLocalKeyframe(const int &index)
 {
 	return robots[id_].keyframe_cloud_array[index];
 }
@@ -293,8 +296,8 @@ Pose3 distributedMapping::getLatestEstimate()
 }
 
 void distributedMapping::poseCovariance2msg(
-	const graph_utils::PoseWithCovariance& pose,
-	geometry_msgs::PoseWithCovariance& msg)
+	const graph_utils::PoseWithCovariance &pose,
+	geometry_msgs::PoseWithCovariance &msg)
 {
 	msg.pose.position.x = pose.pose.x();
 	msg.pose.position.y = pose.pose.y();
@@ -306,31 +309,31 @@ void distributedMapping::poseCovariance2msg(
 	msg.pose.orientation.y = quaternion(2);
 	msg.pose.orientation.z = quaternion(3);
 
-	for(int i = 0; i < 6; i++)
+	for (int i = 0; i < 6; i++)
 	{
-		for(int j = 0; j < 6; j++)
+		for (int j = 0; j < 6; j++)
 		{
-			msg.covariance[i*6 + j] = pose.covariance_matrix(i, j);
+			msg.covariance[i * 6 + j] = pose.covariance_matrix(i, j);
 		}
 	}
 }
 
 void distributedMapping::msg2poseCovariance(
-	const geometry_msgs::PoseWithCovariance& msg,
-	graph_utils::PoseWithCovariance& pose)
+	const geometry_msgs::PoseWithCovariance &msg,
+	graph_utils::PoseWithCovariance &pose)
 {
 	Rot3 rotation(msg.pose.orientation.w, msg.pose.orientation.x,
-		msg.pose.orientation.y, msg.pose.orientation.z);
+				  msg.pose.orientation.y, msg.pose.orientation.z);
 	Point3 translation(msg.pose.position.x, msg.pose.position.y, msg.pose.position.z);
-	
+
 	pose.pose = Pose3(rotation, translation);
 
-	pose.covariance_matrix = gtsam::zeros(6,6);
-	for(int i = 0; i < 6; i++)
+	pose.covariance_matrix = gtsam::zeros(6, 6);
+	for (int i = 0; i < 6; i++)
 	{
-		for(int j = 0; j < 6; j++)
+		for (int j = 0; j < 6; j++)
 		{
-			pose.covariance_matrix(i, j) = msg.covariance[i*6 + j];
+			pose.covariance_matrix(i, j) = msg.covariance[i * 6 + j];
 		}
 	}
 }

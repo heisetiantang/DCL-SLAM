@@ -107,7 +107,7 @@ paramsServer::paramsServer()
 	nh.param<float>(ns + "/keyframe_angle_threshold", keyframe_angle_threshold_, 0.2);
 
 	// visualization
-	nh.param<float>(ns + "/global_map_visualization_radius", global_map_visualization_radius_, 60.0);
+	nh.param<float>(ns + "/global_map_visualization_radius", global_map_visualization_radius_, 200.0);
 
 	// output directory
 	nh.param<std::string>(ns + "/save_directory", save_directory_, "/dcl_output");

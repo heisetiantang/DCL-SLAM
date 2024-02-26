@@ -346,7 +346,7 @@ void distributedMapping::performDistributedMapping(
 		auto prior_factor = PriorFactor<Pose3>(current_symbol, pose_to, prior_noise);
 		local_pose_graph_no_filtering->add(prior_factor);
 		isam2_graph.add(prior_factor);
-
+ 
 		// add piror value
 		initial_values->insert(current_symbol, pose_to);
 		isam2_initial_values.insert(current_symbol, pose_to);

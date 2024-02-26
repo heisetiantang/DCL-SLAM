@@ -43,288 +43,291 @@ using namespace std;
 
 class distributedMapping : public paramsServer
 {
-	public:
-		distributedMapping();
+public:
+	distributedMapping();
 
-		~distributedMapping();
+	~distributedMapping();
 
-		pcl::PointCloud<PointPose3D>::Ptr getLocalKeyposesCloud3D();
+	pcl::PointCloud<PointPose3D>::Ptr getLocalKeyposesCloud3D();
 
-		pcl::PointCloud<PointPose6D>::Ptr getLocalKeyposesCloud6D();
+	pcl::PointCloud<PointPose6D>::Ptr getLocalKeyposesCloud6D();
 
-		pcl::PointCloud<PointPose3D> getLocalKeyframe(const int& index);
+	pcl::PointCloud<PointPose3D> getLocalKeyframe(const int &index);
 
-		Pose3 getLatestEstimate();
+	Pose3 getLatestEstimate();
 
-		void lockOnCall();
+	void lockOnCall();
 
-		void unlockOnCall();
+	void unlockOnCall();
 
-		void performDistributedMapping(
-			const Pose3& pose_to,
-			const pcl::PointCloud<PointPose3D>::Ptr frame_to,
-			const ros::Time& timestamp);
+	void performDistributedMapping(
+		const Pose3 &pose_to,
+		const pcl::PointCloud<PointPose3D>::Ptr frame_to,
+		const ros::Time &timestamp);
 
-		bool saveFrame(
-			const Pose3& pose_to);
+	bool saveFrame(
+		const Pose3 &pose_to);
 
-		void updateLocalPath(
-			const PointPose6D& pose);
+	void updateLocalPath(
+		const PointPose6D &pose);
 
-		bool updatePoses();
+	bool updatePoses();
 
-		void makeDescriptors();
+	void makeDescriptors();
 
-		void publishPath();
+	void publishPath();
 
-		void publishTransformation(
-			const ros::Time& timestamp);
+	void publishTransformation(
+		const ros::Time &timestamp);
 
-		void loopClosureThread();
+	void loopClosureThread();
 
-		void globalMapThread();
+	void globalMapThread();
 
-	private:
-		void poseCovariance2msg(
-			const graph_utils::PoseWithCovariance& pose,
-			geometry_msgs::PoseWithCovariance& msg);
+private:
+	void poseCovariance2msg(
+		const graph_utils::PoseWithCovariance &pose,
+		geometry_msgs::PoseWithCovariance &msg);
 
-		void msg2poseCovariance(
-			const geometry_msgs::PoseWithCovariance& msg,
-			graph_utils::PoseWithCovariance& pose);
+	void msg2poseCovariance(
+		const geometry_msgs::PoseWithCovariance &msg,
+		graph_utils::PoseWithCovariance &pose);
 
-		void globalDescriptorHandler(
-			const dcl_slam::global_descriptorConstPtr& msg,
-			int& id);
+	void globalDescriptorHandler(
+		const dcl_slam::global_descriptorConstPtr &msg,
+		int &id);
 
-		void loopInfoHandler(
-			const dcl_slam::loop_infoConstPtr& msg,
-			int& id);
+	void loopInfoHandler(
+		const dcl_slam::loop_infoConstPtr &msg,
+		int &id);
 
-		void optStateHandler(
-			const std_msgs::Int8ConstPtr& msg,
-			int& id);
+	void optStateHandler(
+		const std_msgs::Int8ConstPtr &msg,
+		int &id);
 
-		void rotationStateHandler(
-			const std_msgs::Int8ConstPtr& msg,
-			int& id);
+	void rotationStateHandler(
+		const std_msgs::Int8ConstPtr &msg,
+		int &id);
 
-		void poseStateHandler(
-			const std_msgs::Int8ConstPtr& msg,
-			int& id);
+	void poseStateHandler(
+		const std_msgs::Int8ConstPtr &msg,
+		int &id);
 
-		void neighborRotationHandler(
-			const dcl_slam::neighbor_estimateConstPtr& msg,
-			int& id);
+	void neighborRotationHandler(
+		const dcl_slam::neighbor_estimateConstPtr &msg,
+		int &id);
 
-		void neighborPoseHandler(
-			const dcl_slam::neighbor_estimateConstPtr& msg,
-			int& id);
+	void neighborPoseHandler(
+		const dcl_slam::neighbor_estimateConstPtr &msg,
+		int &id);
 
-		void updatePoseEstimateFromNeighbor(
-			const int& rid,
-			const Key& key,
-			const graph_utils::PoseWithCovariance& pose);
+	void updatePoseEstimateFromNeighbor(
+		const int &rid,
+		const Key &key,
+		const graph_utils::PoseWithCovariance &pose);
 
-		bool startOptimizationCondition();
+	bool startOptimizationCondition();
 
-		void updateOptimizer();
+	void updateOptimizer();
 
-		void outliersFiltering();
+	void outliersFiltering();
 
-		void computeOptimizationOrder();
+	void computeOptimizationOrder();
 
-		void initializePoseGraphOptimization();
+	void initializePoseGraphOptimization();
 
-		bool rotationEstimationStoppingBarrier();
+	bool rotationEstimationStoppingBarrier();
 
-		void abortOptimization(
-			const bool& log_info);
+	void abortOptimization(
+		const bool &log_info);
 
-		void removeInactiveNeighbors();
+	void removeInactiveNeighbors();
 
-		void failSafeCheck();
+	void failSafeCheck();
 
-		void initializePoseEstimation();
+	void initializePoseEstimation();
 
-		bool poseEstimationStoppingBarrier();
+	bool poseEstimationStoppingBarrier();
 
-		void updateGlobalPath(
-			const Pose3& pose_in);
+	void updateGlobalPath(
+		const Pose3 &pose_in);
 
-		void incrementalInitialGuessUpdate();
+	void incrementalInitialGuessUpdate();
 
-		void endOptimization();
+	void endOptimization();
 
-		void changeOptimizerState(
-			const OptimizerState& state);
+	void changeOptimizerState(
+		const OptimizerState &state);
 
-		void run(const ros::TimerEvent&);
+	void run(const ros::TimerEvent &);
 
-		void performRSIntraLoopClosure();
+	void performRSIntraLoopClosure();
 
-		int detectLoopClosureDistance(
-			const int& cur_ptr);
-		
-		void performIntraLoopClosure();
+	int detectLoopClosureDistance(
+		const int &cur_ptr);
 
-		void calculateTransformation(
-			const int& loop_key_cur,
-			const int& loop_key_pre);
+	void performIntraLoopClosure();
 
-		void loopFindNearKeyframes(
-			pcl::PointCloud<PointPose3D>::Ptr& near_keyframes,
-			const int& key, const int& search_num);
+	void calculateTransformation(
+		const int &loop_key_cur,
+		const int &loop_key_pre);
 
-		void performInterLoopClosure();
+	void loopFindNearKeyframes(
+		pcl::PointCloud<PointPose3D>::Ptr &near_keyframes,
+		const int &key, const int &search_num);
 
-		void performExternLoopClosure();
+	void performInterLoopClosure();
 
-		void loopFindGlobalNearKeyframes(
-			pcl::PointCloud<PointPose3D>::Ptr& near_keyframes,
-			const int& key, const int& search_num);
+	void performExternLoopClosure();
 
-		void publishGlobalMap();
+	void loopFindGlobalNearKeyframes(
+		pcl::PointCloud<PointPose3D>::Ptr &near_keyframes,
+		const int &key, const int &search_num);
 
-		void publishLoopClosureConstraint();
+	void publishGlobalMap();
 
-	public:
-		mutex lock_on_call; // lock on odometry
+	void publishLoopClosureConstraint();
 
-	private:
-		/*** robot team ***/
-		vector<singleRobot> robots;
+public:
+	mutex lock_on_call; // lock on odometry
 
-		/*** ros subscriber and publisher ***/
-		ros::Publisher pub_loop_closure_constraints;
-		ros::Publisher pub_scan_of_scan2map, pub_map_of_scan2map;
-		ros::Publisher pub_global_map;
-		ros::Publisher pub_global_path, pub_local_path;
-		ros::Publisher pub_keypose_cloud;
+	// 定义一个用于发布dcl创建的全局地图的发布者
+	ros::Publisher pubGlobal_all;
 
-		/*** ros service ***/
+private:
+	/*** robot team ***/
+	vector<singleRobot> robots;
 
-		/*** message information ***/
-		pcl::PointCloud<PointPose3D>::Ptr cloud_for_decript_ds; // input cloud for descriptor
-		deque<pair<int, dcl_slam::global_descriptor>> store_descriptors;
+	/*** ros subscriber and publisher ***/
+	ros::Publisher pub_loop_closure_constraints;
+	ros::Publisher pub_scan_of_scan2map, pub_map_of_scan2map;
+	ros::Publisher pub_global_map;
+	ros::Publisher pub_global_path, pub_local_path;
+	ros::Publisher pub_keypose_cloud;
 
-		std_msgs::Int8 state_msg; // optimization state msg
+	/*** ros service ***/
 
-		dcl_slam::global_descriptor global_descriptor_msg; // descriptor message
-		
-		nav_msgs::Path local_path; // path in local frame
-		nav_msgs::Path global_path; // path in global frame
+	/*** message information ***/
+	pcl::PointCloud<PointPose3D>::Ptr cloud_for_decript_ds; // input cloud for descriptor
+	deque<pair<int, dcl_slam::global_descriptor>> store_descriptors;
 
-		/*** downsample filter ***/
-		pcl::VoxelGrid<PointPose3D> downsample_filter_for_descriptor;
-		pcl::VoxelGrid<PointPose3D> downsample_filter_for_intra_loop;
-		pcl::VoxelGrid<PointPose3D> downsample_filter_for_inter_loop;
-		pcl::VoxelGrid<PointPose3D> downsample_filter_for_inter_loop2;
-		pcl::VoxelGrid<PointPose3D> downsample_filter_for_inter_loop3;
+	std_msgs::Int8 state_msg; // optimization state msg
 
-		/*** mutex ***/
-		// vector<mutex> lock_on_call; // lock on odometry
+	dcl_slam::global_descriptor global_descriptor_msg; // descriptor message
 
-		/*** distributed loopclosure ***/
-		int intra_robot_loop_ptr; // current position pointer for intra-robot loop
-		int inter_robot_loop_ptr; // current position pointer for inter-robot loop
+	nav_msgs::Path local_path;	// path in local frame
+	nav_msgs::Path global_path; // path in global frame
 
-		bool intra_robot_loop_close_flag; // intra-robot loop is detected
+	/*** downsample filter ***/
+	pcl::VoxelGrid<PointPose3D> downsample_filter_for_descriptor;
+	pcl::VoxelGrid<PointPose3D> downsample_filter_for_intra_loop;
+	pcl::VoxelGrid<PointPose3D> downsample_filter_for_inter_loop;
+	pcl::VoxelGrid<PointPose3D> downsample_filter_for_inter_loop2;
+	pcl::VoxelGrid<PointPose3D> downsample_filter_for_inter_loop3;
 
-		unique_ptr<scan_descriptor> keyframe_descriptor; // descriptor for keyframe pointcloud
+	/*** mutex ***/
+	// vector<mutex> lock_on_call; // lock on odometry
 
-		deque<dcl_slam::loop_info> loop_closures_candidates; // loop closures need to verify
+	/*** distributed loopclosure ***/
+	int intra_robot_loop_ptr; // current position pointer for intra-robot loop
+	int inter_robot_loop_ptr; // current position pointer for inter-robot loop
 
-		// radius search for intra-robot loop closure
-		pcl::PointCloud<PointPose3D>::Ptr copy_keyposes_cloud_3d; // copy of local 3-dof keyposes
-		pcl::PointCloud<PointPose6D>::Ptr copy_keyposes_cloud_6d; // copy of local 6-dof keyposes
+	bool intra_robot_loop_close_flag; // intra-robot loop is detected
 
-		pcl::KdTreeFLANN<PointPose3D>::Ptr kdtree_history_keyposes; // kdtree for searching history keyposes
+	unique_ptr<scan_descriptor> keyframe_descriptor; // descriptor for keyframe pointcloud
 
-		map<int, int> loop_indexs;
-		map<Symbol, Symbol> loop_indexes;
+	deque<dcl_slam::loop_info> loop_closures_candidates; // loop closures need to verify
 
-		/*** noise model ***/
-		noiseModel::Diagonal::shared_ptr odometry_noise; // odometry factor noise
-		noiseModel::Diagonal::shared_ptr prior_noise; // prior factor noise
+	// radius search for intra-robot loop closure
+	pcl::PointCloud<PointPose3D>::Ptr copy_keyposes_cloud_3d; // copy of local 3-dof keyposes
+	pcl::PointCloud<PointPose6D>::Ptr copy_keyposes_cloud_6d; // copy of local 6-dof keyposes
 
-		/*** local pose graph optmazition ***/
-		ISAM2 *isam2; // isam2 optimizer
+	pcl::KdTreeFLANN<PointPose3D>::Ptr kdtree_history_keyposes; // kdtree for searching history keyposes
 
-		NonlinearFactorGraph isam2_graph; // local pose graph for isam2
-		Values isam2_initial_values; // local initial values for isam2
+	map<int, int> loop_indexs;
+	map<Symbol, Symbol> loop_indexes;
 
-		Values isam2_current_estimates; // current estimates for isam2
-		Pose3 isam2_keypose_estimate; // keypose estimate for isam2
+	/*** noise model ***/
+	noiseModel::Diagonal::shared_ptr odometry_noise; // odometry factor noise
+	noiseModel::Diagonal::shared_ptr prior_noise;	 // prior factor noise
 
-		pcl::PointCloud<PointPose3D>::Ptr keyposes_cloud_3d; // 3-dof keyposes in local frame
-		pcl::PointCloud<PointPose6D>::Ptr keyposes_cloud_6d; // 6-dof keyposes in local frame
+	/*** local pose graph optmazition ***/
+	ISAM2 *isam2; // isam2 optimizer
 
-		/*** distributed pose graph optmazition ***/
-		ros::Timer distributed_mapping_thread; // thread for running distributed mapping
-		boost::shared_ptr<distributed_mapper::DistributedMapper> optimizer; // distributed mapper (DGS)
+	NonlinearFactorGraph isam2_graph; // local pose graph for isam2
+	Values isam2_initial_values;	  // local initial values for isam2
 
-		int steps_of_unchange_graph; // stop optimization 
+	Values isam2_current_estimates; // current estimates for isam2
+	Pose3 isam2_keypose_estimate;	// keypose estimate for isam2
 
-		// measurements
-		boost::shared_ptr<NonlinearFactorGraph> local_pose_graph; // pose graph for distributed mapping
-		boost::shared_ptr<Values> initial_values; // initial values for distributed mapping
-		GraphAndValues graph_values_vec; // vector of pose graph and initial values
+	pcl::PointCloud<PointPose3D>::Ptr keyposes_cloud_3d; // 3-dof keyposes in local frame
+	pcl::PointCloud<PointPose6D>::Ptr keyposes_cloud_6d; // 6-dof keyposes in local frame
 
-		bool graph_disconnected; // pose graph is not connected to others
+	/*** distributed pose graph optmazition ***/
+	ros::Timer distributed_mapping_thread;								// thread for running distributed mapping
+	boost::shared_ptr<distributed_mapper::DistributedMapper> optimizer; // distributed mapper (DGS)
 
-		int lowest_id_included; // lowest id in this robot
-		int lowest_id_to_included; // lowest id to be included in this robot
-		int prior_owner; // the robot that own prior factor
-		bool prior_added; // this robot have add prior factor
+	int steps_of_unchange_graph; // stop optimization
 
-		gtsam::Matrix adjacency_matrix; // adjacency matrix of robot team
-		vector<int> optimization_order; // optimization order of robot team
-		bool in_order; // this robot in optimization order
+	// measurements
+	boost::shared_ptr<NonlinearFactorGraph> local_pose_graph; // pose graph for distributed mapping
+	boost::shared_ptr<Values> initial_values;				  // initial values for distributed mapping
+	GraphAndValues graph_values_vec;						  // vector of pose graph and initial values
 
-		// this robot
-		OptimizerState optimizer_state; // current state of optimizer
-		int optimization_steps; // steps in optimization
-		bool sent_start_optimization_flag; // ready for optimization
+	bool graph_disconnected; // pose graph is not connected to others
 
-		int current_rotation_estimate_iteration; // current iteration time of rotation estimate
-		int current_pose_estimate_iteration; // current iteration time of pose estimate
+	int lowest_id_included;	   // lowest id in this robot
+	int lowest_id_to_included; // lowest id to be included in this robot
+	int prior_owner;		   // the robot that own prior factor
+	bool prior_added;		   // this robot have add prior factor
 
-		double latest_change; // latest change of estimate
-		int steps_without_change; // setps of estimate without change
+	gtsam::Matrix adjacency_matrix; // adjacency matrix of robot team
+	vector<int> optimization_order; // optimization order of robot team
+	bool in_order;					// this robot in optimization order
 
-		bool rotation_estimate_start; // rotation estimate is start
-		bool pose_estimate_start; // pose estimate is start
-		bool rotation_estimate_finished; // rotation estimate is finished
-		bool pose_estimate_finished; // pose estimate is finished
-		bool estimation_done; // estimate is done
+	// this robot
+	OptimizerState optimizer_state;	   // current state of optimizer
+	int optimization_steps;			   // steps in optimization
+	bool sent_start_optimization_flag; // ready for optimization
 
-		Point3 anchor_offset, anchor_point; // anchor offset
+	int current_rotation_estimate_iteration; // current iteration time of rotation estimate
+	int current_pose_estimate_iteration;	 // current iteration time of pose estimate
 
-		// neighbors
-		set<char> neighboring_robots; // neighbors (name) within communication range
-		set<int> neighbors_within_communication_range; // neighbors (id) within communication range
-		map<int, bool> neighbors_started_optimization; // neighbors ready for optimization
-		map<int, OptimizerState> neighbor_state; // current state of neighbors optimizer
+	double latest_change;	  // latest change of estimate
+	int steps_without_change; // setps of estimate without change
 
-		map<int, bool> neighbors_rotation_estimate_finished; // neighbors rotation estimate is finished
-		map<int, bool> neighbors_pose_estimate_finished; // neighbors pose estimate is finished
-		map<int, bool> neighbors_estimation_done; // neighbors estimate is done
+	bool rotation_estimate_start;	 // rotation estimate is start
+	bool pose_estimate_start;		 // pose estimate is start
+	bool rotation_estimate_finished; // rotation estimate is finished
+	bool pose_estimate_finished;	 // pose estimate is finished
+	bool estimation_done;			 // estimate is done
 
-		map<int, int> neighbors_lowest_id_included; // lowest id in neighbors
-		map<int, Point3> neighbors_anchor_offset; // neighbors anchor offset
+	Point3 anchor_offset, anchor_point; // anchor offset
 
-		// distributed pairwise consistency maximization
-		robot_measurements::RobotLocalMap robot_local_map; // local loop closures and transform 
-		robot_measurements::RobotLocalMap robot_local_map_backup; // backups in case of abort
+	// neighbors
+	set<char> neighboring_robots;				   // neighbors (name) within communication range
+	set<int> neighbors_within_communication_range; // neighbors (id) within communication range
+	map<int, bool> neighbors_started_optimization; // neighbors ready for optimization
+	map<int, OptimizerState> neighbor_state;	   // current state of neighbors optimizer
 
-		boost::shared_ptr<NonlinearFactorGraph> local_pose_graph_no_filtering; // pose graph without pcm
+	map<int, bool> neighbors_rotation_estimate_finished; // neighbors rotation estimate is finished
+	map<int, bool> neighbors_pose_estimate_finished;	 // neighbors pose estimate is finished
+	map<int, bool> neighbors_estimation_done;			 // neighbors estimate is done
 
-		map<int, graph_utils::Trajectory> pose_estimates_from_neighbors; // pose estimates of neighbors
-		set<Key> other_robot_keys_for_optimization; // keys of neighbors for optimization
+	map<int, int> neighbors_lowest_id_included; // lowest id in neighbors
+	map<int, Point3> neighbors_anchor_offset;	// neighbors anchor offset
 
-		set<pair<Key, Key>> accepted_keys, rejected_keys; // accepted and rejected pairs
-		int measurements_accepted_num, measurements_rejected_num;
+	// distributed pairwise consistency maximization
+	robot_measurements::RobotLocalMap robot_local_map;		  // local loop closures and transform
+	robot_measurements::RobotLocalMap robot_local_map_backup; // backups in case of abort
+
+	boost::shared_ptr<NonlinearFactorGraph> local_pose_graph_no_filtering; // pose graph without pcm
+
+	map<int, graph_utils::Trajectory> pose_estimates_from_neighbors; // pose estimates of neighbors
+	set<Key> other_robot_keys_for_optimization;						 // keys of neighbors for optimization
+
+	set<pair<Key, Key>> accepted_keys, rejected_keys; // accepted and rejected pairs
+	int measurements_accepted_num, measurements_rejected_num;
 };
 
 #endif
