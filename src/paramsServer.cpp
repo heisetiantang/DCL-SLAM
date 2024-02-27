@@ -170,6 +170,30 @@ pcl::PointCloud<PointPose3D>::Ptr paramsServer::transformPointCloud(pcl::PointCl
 	return cloud_out;
 }
 
+// 增加颜色点云的变换函数
+pcl::PointCloud<pcl::PointXYZRGB>::Ptr paramsServer::transformPointCloud(pcl::PointCloud<pcl::PointXYZRGB> cloud_in, PointPose6D* pose)
+{
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZRGB>());
+
+	int cloud_size = cloud_in.size();
+	cloud_out->resize(cloud_size);
+
+	Eigen::Affine3f trans_cur = pcl::getTransformation(pose->x, pose->y, pose->z, pose->roll, pose->pitch, pose->yaw);
+	
+	#pragma omp parallel for num_threads(onboard_cpu_cores_num_)
+	for(int i = 0; i < cloud_size; ++i)
+	{
+		const auto &p_from = cloud_in.points[i];
+		cloud_out->points[i].x = trans_cur(0,0)*p_from.x + trans_cur(0,1)*p_from.y + trans_cur(0,2)*p_from.z + trans_cur(0,3);
+		cloud_out->points[i].y = trans_cur(1,0)*p_from.x + trans_cur(1,1)*p_from.y + trans_cur(1,2)*p_from.z + trans_cur(1,3);
+		cloud_out->points[i].z = trans_cur(2,0)*p_from.x + trans_cur(2,1)*p_from.y + trans_cur(2,2)*p_from.z + trans_cur(2,3);
+		cloud_out->points[i].r = cloud_in.points[i].r;
+		cloud_out->points[i].g = cloud_in.points[i].g;
+		cloud_out->points[i].b = cloud_in.points[i].b;
+	}
+	return cloud_out;
+}
+
 pcl::PointCloud<PointPose3D>::Ptr paramsServer::transformPointCloud(pcl::PointCloud<PointPose3D> cloud_in, gtsam::Pose3 pose)
 {
 	pcl::PointCloud<PointPose3D>::Ptr cloud_out(new pcl::PointCloud<PointPose3D>());

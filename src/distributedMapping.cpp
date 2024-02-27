@@ -321,6 +321,19 @@ void distributedMapping::neighborPoseHandler(
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	class distributedMapping: saving keyframe API
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+void distributedMapping::performDistributedMappingRGB(
+	const pcl::PointCloud<pcl::PointXYZRGB>::Ptr frame_to_rgb,
+	const ros::Time& timestamp_rgb)
+{
+// 将带有RGB信息的点云填充到相应的机器人关键帧队列之中
+pcl::copyPointCloud(*frame_to_rgb, *robots[id_].keyframe_cloud_rgb);
+robots[id_].keyframe_cloud_rgb_array.push_back(*robots[id_].keyframe_cloud_rgb);
+// 保存时间戳
+robots[id_].time_cloud_input_stamp_rgb = timestamp_rgb;
+robots[id_].time_cloud_input_rgb = timestamp_rgb.toSec();
+}
+
+
 void distributedMapping::performDistributedMapping(
 	const Pose3& pose_to,
 	const pcl::PointCloud<PointPose3D>::Ptr frame_to,

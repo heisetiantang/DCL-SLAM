@@ -93,6 +93,9 @@ distributedMapping::distributedMapping() : paramsServer()
 		robot.keyframe_cloud.reset(new pcl::PointCloud<PointPose3D>());
 		robot.keyframe_cloud_array.clear();
 
+		// 初始化用于颜色的点云****************************************************
+		robot.keyframe_cloud_rgb.reset(new pcl::PointCloud<pcl::PointXYZRGB>());
+		robot.keyframe_cloud_rgb_array.clear();
 		robots.push_back(robot);
 	}
 

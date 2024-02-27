@@ -58,6 +58,11 @@ struct singleRobot {
 	dcl_slam::neighbor_estimate estimate_msg; // pose and rotation estimate msg
 	pcl::PointCloud<PointPose3D>::Ptr keyframe_cloud; // recent keyframe pointcloud
 	std::vector<pcl::PointCloud<PointPose3D>> keyframe_cloud_array; // and its array
+	// 增加用于颜色的点云****************************************************
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr keyframe_cloud_rgb;
+	std::vector<pcl::PointCloud<pcl::PointXYZRGB>> keyframe_cloud_rgb_array;
+	ros::Time time_cloud_input_stamp_rgb;
+	double time_cloud_input_rgb;
 	
 	Pose3 piror_odom; // piror factor
 };
@@ -92,6 +97,10 @@ class paramsServer
 		pcl::PointCloud<PointPose3D>::Ptr transformPointCloud(
 			pcl::PointCloud<PointPose3D> cloud_in,
 			gtsam::Pose3 pose);
+		
+		pcl::PointCloud<pcl::PointXYZRGB>::Ptr transformPointCloud(
+			pcl::PointCloud<pcl::PointXYZRGB> cloud_in,
+			PointPose6D* pose);
 
 	protected:
 		ros::NodeHandle nh;

@@ -65,6 +65,10 @@ public:
 		const pcl::PointCloud<PointPose3D>::Ptr frame_to,
 		const ros::Time &timestamp);
 
+	void performDistributedMappingRGB(
+		const pcl::PointCloud<pcl::PointXYZRGB>::Ptr frame_to_rgb,
+		const ros::Time &timestamp_rgb);
+
 	bool saveFrame(
 		const Pose3 &pose_to);
 
