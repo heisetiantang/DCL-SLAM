@@ -124,6 +124,9 @@ distributedMapping::distributedMapping() : paramsServer()
 	pubGlobal_all = nh.advertise<sensor_msgs::PointCloud2>(
 		"distributedMapping/copyGlobalMap", 1);
 
+ 	pubGlobal_all_rgb = nh.advertise<sensor_msgs::PointCloud2>(
+			"distributedMapping/copyGlobalMapRGB", 1); 
+
 	/*** message information ***/
 	cloud_for_decript_ds.reset(new pcl::PointCloud<PointPose3D>());
 

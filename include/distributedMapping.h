@@ -197,6 +197,7 @@ public:
 
 	// 定义一个用于发布dcl创建的全局地图的发布者
 	ros::Publisher pubGlobal_all;
+	ros::Publisher pubGlobal_all_rgb;
 
 private:
 	/*** robot team ***/
