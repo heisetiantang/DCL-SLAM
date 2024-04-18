@@ -342,6 +342,7 @@ void distributedMapping::performDistributedMapping(
 	// save keyframe cloud
 	pcl::copyPointCloud(*frame_to, *robots[id_].keyframe_cloud);
 	robots[id_].keyframe_cloud_array.push_back(*robots[id_].keyframe_cloud);
+	robots[id_].pose_buffer.push_back(pose_to);
 	// save timestamp
 	robots[id_].time_cloud_input_stamp = timestamp;
 	robots[id_].time_cloud_input = timestamp.toSec();
@@ -497,6 +498,8 @@ bool distributedMapping::updatePoses()
 
 	if(intra_robot_loop_close_flag)
 	{
+		ROS_WARN("Intra-robot loop closure is detected. Skip updating poses.");
+
 		// clear path
 		local_path.poses.clear();
 

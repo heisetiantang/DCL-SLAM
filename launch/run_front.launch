@@ -95,14 +95,20 @@
 
 	<node name="player2" pkg="rosbag" type="play" output="screen" args="-r 1 -q -d 2 $(arg SYSU_bag)"/> -->
 
-	<arg name="SYSU_bag" value="$(env HOME)/rosbag-data/qy-dxtc/xyz_rgb.bag"/>
-		
-		<!-- <remap from="/a/keyframe_fast" to="/a/scan_undistorted"/>
-		<remap from="/b/keyframe_fast" to="/b/scan_undistorted"/>
-		<remap from="/c/keyframe_fast" to="/c/scan_undistorted"/>
-		<remap from="/a/odom_fast" to="/a/odom"/>
-		<remap from="/b/odom_fast" to="/b/odom"/>
-		<remap from="/c/odom_fast" to="/c/odom"/>   -->
+	<!-- <arg name="SYSU_bag" value="$(env HOME)/rosbag-data/qy-dxtc/xyz_rgb.bag"/> -->
+	<!-- <arg name="SYSU_bag" value="$(env HOME)/rosbag-data/qy-dxtc/test_abc.bag"/> -->
+	<arg name="SYSU_bag" value="$(env HOME)/rosbag/qy_2/2024-04-17-10-19-03.bag"/>
+		<!-- <remap from="/a/a/scan_undistorted" to="/a/scan_undistorted"/> -->
+		<!-- <remap from="/b/a/scan_undistorted" to="/b/scan_undistorted"/> -->
+		<!-- <remap from="/c/a/scan_undistorted" to="/c/scan_undistorted"/> -->
+		<!-- <remap from="/a/a/scan_rgb" to="/a/scan_rgb"/> -->
+		<!-- <remap from="/b/a/scan_rgb" to="/b/scan_rgb"/> -->
+		<!-- <remap from="/c/a/scan_rgb" to="/c/scan_rgb"/>  -->
+		<!-- <remap from="/a/a/odom" to="/a/odom"/> -->
+		<!-- <remap from="/b/a/odom" to="/b/odom"/> -->
+		<!-- <remap from="/c/a/odom" to="/c/odom"/>  -->
+
+
 
 	<node name="player2" pkg="rosbag" type="play" output="screen" args="-r 1 -q -d 2 $(arg SYSU_bag)"/>
 

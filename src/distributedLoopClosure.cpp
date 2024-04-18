@@ -201,7 +201,7 @@ void distributedMapping::calculateTransformation(
 	// fail safe check for cloud
 	if(scan_cloud->size() < 300 || map_cloud->size() < 1000)
 	{
-		ROS_WARN("keyFrameCloud too little points 1");
+		// ROS_WARN("keyFrameCloud too little points 1");
 		return;
 	}
 

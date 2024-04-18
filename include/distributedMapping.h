@@ -41,6 +41,28 @@
 using namespace gtsam;
 using namespace std;
 
+// 定义结构体
+struct Point_odom {
+	Point_odom() {
+        // 初始化 cloud_xyz_intensity 指针
+        cloud_xyz_intensity.reset(new pcl::PointCloud<pcl::PointXYZI>);
+        
+        // 初始化 cloud_xyz_rgb 指针
+        cloud_xyz_rgb.reset(new pcl::PointCloud<pcl::PointXYZRGB>);
+        
+        // 初始化 odom 指针
+        odom.reset(new nav_msgs::Odometry);
+    }
+    pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_xyz_intensity;
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyz_rgb;
+    nav_msgs::Odometry::Ptr odom;
+};
+
+
+
+
+
+
 class distributedMapping : public paramsServer
 {
 public:
