@@ -8,7 +8,7 @@ dcl_slam: {
   n_scan: 32,                             # number of lidar channel (i.e., 6, 16, 64)
 
   # CPU params
-  onboard_cpu_cores_num: 16,               # cores number of onboard unit
+  onboard_cpu_cores_num: 8,               # cores number of onboard unit
   loop_closure_process_interval: 0.05,    # interval of detecting loop (in second)
   map_publish_interval: 10.0,             # interval of publish global maps (in second)
   mapping_process_interval: 0.02,         # interval of optmization (in second)

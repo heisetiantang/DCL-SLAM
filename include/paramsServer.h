@@ -113,7 +113,7 @@ public:
 														gtsam::Pose3* pose_gtsam);
 
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr transformPointCloud(pcl::PointCloud<pcl::PointXYZRGB> cloud_in,
-															 PointPose6D* pose);
+															 PointPose6D* pose,gtsam::Pose3* pose_gtsam);
 
 protected:
   ros::NodeHandle nh;

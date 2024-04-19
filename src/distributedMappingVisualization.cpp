@@ -85,18 +85,19 @@ void distributedMapping::publishGlobalMap()
 	cout << "robots[id_].keyframe_cloud_rgb_array is not empty" << endl;
 	// 仿照、将带颜色的点云拼接
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr global_map_keyframes_rgb(new pcl::PointCloud<pcl::PointXYZRGB>());
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr global_map_keyframes_rgb_ds(new pcl::PointCloud<pcl::PointXYZRGB>());
+	// pcl::PointCloud<pcl::PointXYZRGB>::Ptr global_map_keyframes_rgb_ds(new pcl::PointCloud<pcl::PointXYZRGB>());
 	for (size_t i = 0; i < (int)indices.size(); ++i)
 	{
 	  PointPose6D pose_6d_tmp = poses_6d_cloud_copy->points[indices[i]];
 	  *global_map_keyframes_rgb +=
-		  *transformPointCloud(robots[id_].keyframe_cloud_rgb_array[pose_6d_tmp.intensity], &pose_6d_tmp);
+		  *transformPointCloud(robots[id_].keyframe_cloud_rgb_array[pose_6d_tmp.intensity], &pose_6d_tmp,
+                &robots[id_].pose_buffer[pose_6d_tmp.intensity]);
 	}
 
-	pcl::VoxelGrid<pcl::PointXYZRGB> downsample_filter_for_global_map_rgb;	// for global map visualization
-	downsample_filter_for_global_map_rgb.setLeafSize(map_leaf_size_, map_leaf_size_, map_leaf_size_);
-	downsample_filter_for_global_map_rgb.setInputCloud(global_map_keyframes_rgb);
-	downsample_filter_for_global_map_rgb.filter(*global_map_keyframes_rgb_ds);
+	// pcl::VoxelGrid<pcl::PointXYZRGB> downsample_filter_for_global_map_rgb;	// for global map visualization
+	// downsample_filter_for_global_map_rgb.setLeafSize(map_leaf_size_, map_leaf_size_, map_leaf_size_);
+	// downsample_filter_for_global_map_rgb.setInputCloud(global_map_keyframes_rgb);
+	// downsample_filter_for_global_map_rgb.filter(*global_map_keyframes_rgb_ds);
 
 	// 发布没有降采样的RGB全局地图
 	sensor_msgs::PointCloud2 global_map_msg_rgb;
