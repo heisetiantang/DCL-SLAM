@@ -325,6 +325,15 @@ void distributedMapping::performDistributedMappingRGB(
 	const pcl::PointCloud<pcl::PointXYZRGB>::Ptr frame_to_rgb,
 	const ros::Time& timestamp_rgb)
 {
+// if(frame_to_rgb->empty())
+// {
+// 	ROS_WARN("Empty frame_to_rgb.");
+// 	return;
+// }else
+// {
+// 	ROS_WARN("performDistributedMappingRGB");
+// }
+	
 // 将带有RGB信息的点云填充到相应的机器人关键帧队列之中
 pcl::copyPointCloud(*frame_to_rgb, *robots[id_].keyframe_cloud_rgb);
 robots[id_].keyframe_cloud_rgb_array.push_back(*robots[id_].keyframe_cloud_rgb);

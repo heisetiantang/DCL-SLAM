@@ -122,10 +122,10 @@ distributedMapping::distributedMapping() : paramsServer()
 
 	// 发布拷贝出来的全局地图
 	pubGlobal_all = nh.advertise<sensor_msgs::PointCloud2>(
-		"distributedMapping/copyGlobalMap", 1);
+		"distributedMapping/copyGlobalMap", 10);
 
  	pubGlobal_all_rgb = nh.advertise<sensor_msgs::PointCloud2>(
-			"distributedMapping/copyGlobalMapRGB", 1); 
+			"distributedMapping/GlobalMapRGB", 10); 
 
 	/*** message information ***/
 	cloud_for_decript_ds.reset(new pcl::PointCloud<PointPose3D>());

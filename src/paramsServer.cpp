@@ -103,8 +103,8 @@ paramsServer::paramsServer()
   nh.param<float>(ns + "/ransac_outlier_reject_threshold", ransac_outlier_reject_threshold_, 0.05);
 
   // keyframe params
-  nh.param<float>(ns + "/keyframe_distance_threshold", keyframe_distance_threshold_, 1.0);
-  nh.param<float>(ns + "/keyframe_angle_threshold", keyframe_angle_threshold_, 0.2);
+  nh.param<float>(ns + "/keyframe_distance_threshold", keyframe_distance_threshold_, 0.5);
+  nh.param<float>(ns + "/keyframe_angle_threshold", keyframe_angle_threshold_, 0.5);
 
   // visualization
   nh.param<float>(ns + "/global_map_visualization_radius", global_map_visualization_radius_, 200.0);

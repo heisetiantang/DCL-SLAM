@@ -320,6 +320,7 @@ void distributedMapping::loopFindNearKeyframes(
 void distributedMapping::performInterLoopClosure()
 {
 	// early return
+	ROS_WARN("keyframe_descriptor->getSize()",keyframe_descriptor->getSize());
 	if(keyframe_descriptor->getSize() <= inter_robot_loop_ptr || !inter_robot_loop_closure_enable_)
 	{
 		return;
@@ -685,9 +686,9 @@ void distributedMapping::loopClosureThread()
 	{
 		rate.sleep();
 
-		performRSIntraLoopClosure(); // find intra-loop with radius search
+		// performRSIntraLoopClosure(); // find intra-loop with radius search
 
-		performIntraLoopClosure(); // find intra-loop with descriptor
+		// performIntraLoopClosure(); // find intra-loop with descriptor
 
 		performInterLoopClosure(); // find inter-loop with descriptor
 
