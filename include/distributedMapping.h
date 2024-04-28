@@ -44,17 +44,16 @@ using namespace std;
 // 定义结构体
 struct Point_odom {
 	Point_odom() {
-        // 初始化 cloud_xyz_intensity 指针
-        cloud_xyz_intensity.reset(new pcl::PointCloud<pcl::PointXYZI>);
-        
-        // 初始化 cloud_xyz_rgb 指针
-        cloud_xyz_rgb.reset(new pcl::PointCloud<pcl::PointXYZRGB>);
-        
-        // 初始化 odom 指针
-        odom.reset(new nav_msgs::Odometry);
+		cloud_xyz_intensity_L = pcl::PointCloud<pcl::PointXYZI>::Ptr(new pcl::PointCloud<pcl::PointXYZI>);
+		cloud_xyz_intensity_R = pcl::PointCloud<pcl::PointXYZI>::Ptr(new pcl::PointCloud<pcl::PointXYZI>);
+		cloud_xyz_rgb_L = pcl::PointCloud<pcl::PointXYZRGB>::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>);
+		cloud_xyz_rgb_R = pcl::PointCloud<pcl::PointXYZRGB>::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>);
+		odom = nav_msgs::Odometry::Ptr(new nav_msgs::Odometry);
     }
-    pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_xyz_intensity;
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyz_rgb;
+	pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_xyz_intensity_L;
+	pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_xyz_intensity_R;
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyz_rgb_L;
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyz_rgb_R;
     nav_msgs::Odometry::Ptr odom;
 };
 
