@@ -29,7 +29,7 @@
   	</include>
 
 	<!-- rosbag player node ->> you need to change bag file here!!! -->
-	<arg name="SYSU_bag" value="$(env HOME)/py_shall/street_04abc.bag"/>
+	<arg name="SYSU_bag" value="$(env HOME)/rosbag/py_shall/street_04abc.bag"/>
 		
 		<remap from="/a/velodyne_points" to="/a/velodyne_points"/>
 		<remap from="/b/velodyne_points" to="/b/velodyne_points"/>
