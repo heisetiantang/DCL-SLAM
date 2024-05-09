@@ -49,16 +49,14 @@ struct Point_odom {
 		cloud_xyz_rgb_L = pcl::PointCloud<pcl::PointXYZRGB>::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>);
 		cloud_xyz_rgb_R = pcl::PointCloud<pcl::PointXYZRGB>::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>);
 		odom = nav_msgs::Odometry::Ptr(new nav_msgs::Odometry);
-		odom_last = nav_msgs::Odometry::Ptr(new nav_msgs::Odometry);
-		odom_now = nav_msgs::Odometry::Ptr(new nav_msgs::Odometry);
+		odom_first = nav_msgs::Odometry::Ptr(new nav_msgs::Odometry);
     }
 	pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_xyz_intensity_L;
 	pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_xyz_intensity_R;
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyz_rgb_L;
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyz_rgb_R;
     nav_msgs::Odometry::Ptr odom;
-	nav_msgs::Odometry::Ptr odom_last;
-	nav_msgs::Odometry::Ptr odom_now;
+	nav_msgs::Odometry::Ptr odom_first;
 };
 
 

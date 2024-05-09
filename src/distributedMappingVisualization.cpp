@@ -75,8 +75,6 @@ void distributedMapping::publishGlobalMap()
 												  &pose_6d_tmp, &robots[id_].pose_buffer[pose_6d_tmp.intensity]);
 	// *global_map_keyframes += *transformPointCloud(robots[id_].keyframe_cloud_array[pose_6d_tmp.intensity],
 	// 											  &pose_6d_tmp);
-	// *global_map_keyframes +=
-	// 	robots[id_].keyframe_cloud_array[pose_6d_tmp.intensity];
   }
 
   // if (!robots[id_].keyframe_cloud_rgb_array.empty())
