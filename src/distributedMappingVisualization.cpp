@@ -71,10 +71,10 @@ void distributedMapping::publishGlobalMap()
   for (int i = 0; i < (int)indices.size(); ++i)
   {
 	PointPose6D pose_6d_tmp = poses_6d_cloud_copy->points[indices[i]];
-	*global_map_keyframes += *transformPointCloud(robots[id_].keyframe_cloud_array[pose_6d_tmp.intensity],
-												  &pose_6d_tmp, &robots[id_].pose_buffer[pose_6d_tmp.intensity]);
 	// *global_map_keyframes += *transformPointCloud(robots[id_].keyframe_cloud_array[pose_6d_tmp.intensity],
-	// 											  &pose_6d_tmp);
+	// 											  &pose_6d_tmp, &robots[id_].pose_buffer[pose_6d_tmp.intensity]);
+	*global_map_keyframes += *transformPointCloud(robots[id_].keyframe_cloud_array[pose_6d_tmp.intensity],
+												  &pose_6d_tmp);
   }
 
   // if (!robots[id_].keyframe_cloud_rgb_array.empty())
@@ -148,8 +148,8 @@ void distributedMapping::publishLoopClosureConstraint()
   nodes.scale.y = 0.3;
   nodes.scale.z = 0.3;
   nodes.color.r = 0;
-  nodes.color.g = 0.8;
-  nodes.color.b = 1;
+  nodes.color.g = 1;
+  nodes.color.b = 0;
   nodes.color.a = 1;
 
   // loop edges
@@ -162,8 +162,8 @@ void distributedMapping::publishLoopClosureConstraint()
   constraints.id = 1;
   constraints.pose.orientation.w = 1;
   constraints.scale.x = 0.1;
-  constraints.color.r = 0.9;
-  constraints.color.g = 0.9;
+  constraints.color.r = 1;
+  constraints.color.g = 0;
   constraints.color.b = 0;
   constraints.color.a = 1;
 

@@ -5,7 +5,7 @@ dcl_slam: {
 
   # lidar configuration
   sensor: velodyne,                       # lidar type, support 'velodyne 16/64' or 'livox 6'
-  n_scan: 32,                             # number of lidar channel (i.e., 6, 16, 64)
+  n_scan: 40,                             # number of lidar channel (i.e., 6, 16, 64)
 
   # CPU params
   onboard_cpu_cores_num: 8,               # cores number of onboard unit
@@ -51,8 +51,8 @@ common:
     
 preprocess:
     lidar_type: 2                # 1 for Livox serials LiDAR, 2 for Velodyne LiDAR, 3 for ouster LiDAR, 
-    scan_line: 40
-    scan_rate: 2                # only need to be set for velodyne, unit: Hz,
+    scan_line: 32
+    scan_rate: 10                # only need to be set for velodyne, unit: Hz,
     timestamp_unit: 2            # the unit of time/t field in the PointCloud2 rostopic: 0-second, 1-milisecond, 2-microsecond, 3-nanosecond.
     blind: 2
 
