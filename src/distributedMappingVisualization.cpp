@@ -77,8 +77,8 @@ void distributedMapping::publishGlobalMap()
 	// 											  &pose_6d_tmp);
   }
 
-  // if (!robots[id_].keyframe_cloud_rgb_array.empty())
-  if (0)  //暂时没有数据输出
+  if (!robots[id_].keyframe_cloud_rgb_array.empty())
+  // if (0)  //暂时没有数据输出
   {
 	// cout << "robots[id_].keyframe_cloud_rgb_array is not empty" << endl;
 	// 仿照、将带颜色的点云拼接
@@ -103,6 +103,11 @@ void distributedMapping::publishGlobalMap()
 	global_map_msg_rgb.header.stamp = robots[id_].time_cloud_input_stamp;
 	global_map_msg_rgb.header.frame_id = world_frame_;
 	pubGlobal_all_rgb.publish(global_map_msg_rgb);
+
+  // 保存全局地图到文件
+
+
+
   }
 
   // 发布未进行降采样的全局地图
@@ -115,17 +120,20 @@ void distributedMapping::publishGlobalMap()
   pubGlobal_all.publish(global_map_msg_copy);
 
   // downsample visualized points
-  pcl::VoxelGrid<PointPose3D> downsample_filter_for_global_map;	 // for global map visualization
-  downsample_filter_for_global_map.setLeafSize(map_leaf_size_, map_leaf_size_, map_leaf_size_);
-  downsample_filter_for_global_map.setInputCloud(global_map_keyframes);
-  downsample_filter_for_global_map.filter(*global_map_keyframes_ds);
+  // pcl::VoxelGrid<PointPose3D> downsample_filter_for_global_map;	 // for global map visualization
+  // downsample_filter_for_global_map.setLeafSize(map_leaf_size_, map_leaf_size_, map_leaf_size_);
+  // downsample_filter_for_global_map.setInputCloud(global_map_keyframes);
+  // downsample_filter_for_global_map.filter(*global_map_keyframes_ds);
 
   // publish global map
-  sensor_msgs::PointCloud2 global_map_msg;
-  pcl::toROSMsg(*global_map_keyframes_ds, global_map_msg);
-  global_map_msg.header.stamp = robots[id_].time_cloud_input_stamp;
-  global_map_msg.header.frame_id = world_frame_;
-  pub_global_map.publish(global_map_msg);
+  // sensor_msgs::PointCloud2 global_map_msg;
+  // pcl::toROSMsg(*global_map_keyframes_ds, global_map_msg);
+  // global_map_msg.header.stamp = robots[id_].time_cloud_input_stamp;
+  // global_map_msg.header.frame_id = world_frame_;
+  // pub_global_map.publish(global_map_msg);
+
+
+
 }
 
 void distributedMapping::publishLoopClosureConstraint()
