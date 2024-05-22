@@ -686,12 +686,12 @@ void distributedMapping::loopClosureThread()
 	{
 		rate.sleep();
 
-		// performRSIntraLoopClosure(); // find intra-loop with radius search
+		performRSIntraLoopClosure(); // find intra-loop with radius search
 
-		// performIntraLoopClosure(); // find intra-loop with descriptor
+		performIntraLoopClosure(); // find intra-loop with descriptor
 
-		// performInterLoopClosure(); // find inter-loop with descriptor
+		performInterLoopClosure(); // find inter-loop with descriptor
 
-		// performExternLoopClosure(); // verify all inter-loop here
+		performExternLoopClosure(); // verify all inter-loop here
 	}
 }

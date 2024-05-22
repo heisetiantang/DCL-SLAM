@@ -28,7 +28,7 @@
 		<arg name="lioType" value="$(arg set_lio_type)"/>
   	</include>
 
-	<!-- <arg name="SYSU_bag" value="$(env HOME)/rosbag-data/qy-dxtc/xyz_rgb.bag"/> -->
+	<!-- rosbag player node ->> you need to change bag file here!!! -->
 	<!-- <arg name="SYSU_bag" value="$(env HOME)/rosbag/qy_2/test_abc_2.bag"/> -->
 	<arg name="SYSU_bag" value="$(env HOME)/rosbag/qy3/test_abc_3.bag"/>
 	<!-- <arg name="SYSU_bag" value="$(env HOME)/rosbag/qy3/test_abc_4.bag"/> -->

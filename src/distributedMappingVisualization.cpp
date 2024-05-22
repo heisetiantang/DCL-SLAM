@@ -217,8 +217,8 @@ void distributedMapping::publishLoopClosureConstraint()
   nodes.scale.y = 0.3;
   nodes.scale.z = 0.3;
   nodes.color.r = 0;
-  nodes.color.g = 0.8;
-  nodes.color.b = 1;
+  nodes.color.g = 1;
+  nodes.color.b = 0;
   nodes.color.a = 1;
 
   // loop edges
@@ -231,8 +231,8 @@ void distributedMapping::publishLoopClosureConstraint()
   constraints.id = 1;
   constraints.pose.orientation.w = 1;
   constraints.scale.x = 0.1;
-  constraints.color.r = 0.9;
-  constraints.color.g = 0.9;
+  constraints.color.r = 1;
+  constraints.color.g = 0;
   constraints.color.b = 0;
   constraints.color.a = 1;
 
