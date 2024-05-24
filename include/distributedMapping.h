@@ -222,6 +222,8 @@ public:
 	ros::Publisher pubGlobal_all;
 	ros::Publisher pubGlobal_all_rgb;
 
+	
+
 private:
 	/*** robot team ***/
 	vector<singleRobot> robots;

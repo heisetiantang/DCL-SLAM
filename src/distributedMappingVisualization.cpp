@@ -95,8 +95,8 @@ void distributedMapping::publishGlobalMap()
     // 											  &pose_6d_tmp);
   }
 
-  if (!robots[id_].keyframe_cloud_rgb_array.empty())
-  // if (0)  //暂时没有数据输出
+  // if (!robots[id_].keyframe_cloud_rgb_array.empty())
+  if (0)  //暂时没有数据输出
   {
     // cout << "robots[id_].keyframe_cloud_rgb_array is not empty" << endl;
     // 仿照、将带颜色的点云拼接
@@ -126,7 +126,7 @@ void distributedMapping::publishGlobalMap()
     signal(SIGINT, Stop_flg);
     if (flg_rgb_map_save)
     {
-      ROS_INFO("地图文件存储路径：%s", file_path.c_str());
+      // ROS_INFO("地图文件存储路径：%s", file_path.c_str());
       mutex_xyzRGB.lock();
       if (global_map_keyframes_rgb->size() > 0)
       {
