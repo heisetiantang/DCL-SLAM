@@ -64,7 +64,6 @@ struct singleRobot
   double time_cloud_input_rgb;
   // 增加pose的vector
   std::vector<gtsam::Pose3> pose_buffer;
-
   Pose3 piror_odom;	 // piror factor
 };
 

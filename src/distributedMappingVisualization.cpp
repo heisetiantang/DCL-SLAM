@@ -1,6 +1,5 @@
 #include "distributedMapping.h"
-
-////////
+#include "NdtMatch/ndt_match.h"
 #include <csignal>
 #include <pcl/io/pcd_io.h>
 bool flg_rgb_map_save = false;
@@ -10,6 +9,11 @@ std::string file_name_xyzrgb = "globalMap_High_xyzrgb.pcd";
 std::string file_name_xyzi = "globalMap_High_xyzi.pcd";
 std::mutex mutex_xyzI, mutex_xyzRGB;
 
+// struct Frame_first frame_first;
+
+// pcl::PointCloud<pcl::PointXYZI>::Ptr frame_first_a(new pcl::PointCloud<pcl::PointXYZI>);
+// pcl::PointCloud<pcl::PointXYZI>::Ptr frame_first_b(new pcl::PointCloud<pcl::PointXYZI>);
+// pcl::PointCloud<pcl::PointXYZI>::Ptr frame_first_c(new pcl::PointCloud<pcl::PointXYZI>);
 // 程序终止进程
 void Stop_flg(int sig)
 {
@@ -122,7 +126,6 @@ void distributedMapping::publishGlobalMap()
     pubGlobal_all_rgb.publish(global_map_msg_rgb);
 
     // 保存全局地图到文件
-
     signal(SIGINT, Stop_flg);
     if (flg_rgb_map_save)
     {
@@ -173,6 +176,46 @@ void distributedMapping::publishGlobalMap()
       flg_rgb_map_save = false;
     }
   }
+
+
+
+
+
+  // // ROS_WARN("当前机器人的id：%d", id_);
+  // if (id_ == 0 && !robots[id_].keyframe_cloud->empty())
+  // {
+  //   ROS_INFO("a 车不动");
+  //   frame_first.cloud_xyz_i_first_a = robots[id_].keyframe_cloud;
+  // }
+  // if (id_ == 1 && !robots[id_].keyframe_cloud->empty())
+  // {
+  //   ROS_INFO("b");
+  //   frame_first.cloud_xyz_i_first_b = robots[id_].keyframe_cloud;
+  //   // 设置一个转换函数用于pcl::transformPointCloud
+  //   Eigen::Matrix4f transform_result = Eigen::Matrix4f::Identity();
+  //   transform_result = init_guess_Get(id_);
+
+
+  //   transform_result = result_matrix_get(id_, transform_result);
+  //   // ROS_INFO("不 frame_first.cloud_xyz_i_first_a :%d",frame_first.cloud_xyz_i_first_a->size());
+
+
+  //   // 计算ndt变换矩阵
+  //   // transform_result = 
+  //   pcl::transformPointCloud(*global_map_keyframes, *global_map_keyframes, transform_result);
+  // }
+  // // if (id_ == 2 && !robots[id_].keyframe_cloud->empty())
+  // // {
+  // //   ROS_INFO("c");
+  // //   // 设置一个转换函数用于pcl::transformPointCloud
+  // //   Eigen::Matrix4f transform_result = Eigen::Matrix4f::Identity();
+  // //   transform_result = init_guess_Get(id_);
+
+  // //   pcl::transformPointCloud(*global_map_keyframes, *global_map_keyframes, transform_result);
+  // // }
+
+
+  
 
   // 发布未进行降采样的全局地图
   pcl::PointCloud<PointPose3D>::Ptr global_map_keyframes_copy(new pcl::PointCloud<PointPose3D>());

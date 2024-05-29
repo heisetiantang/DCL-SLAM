@@ -42,26 +42,24 @@ using namespace gtsam;
 using namespace std;
 
 // 定义结构体
-struct Point_odom {
-	Point_odom() {
+struct Point_odom
+{
+	Point_odom()
+	{
 		cloud_xyz_intensity_L = pcl::PointCloud<pcl::PointXYZI>::Ptr(new pcl::PointCloud<pcl::PointXYZI>);
 		cloud_xyz_intensity_R = pcl::PointCloud<pcl::PointXYZI>::Ptr(new pcl::PointCloud<pcl::PointXYZI>);
 		cloud_xyz_rgb_L = pcl::PointCloud<pcl::PointXYZRGB>::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>);
 		cloud_xyz_rgb_R = pcl::PointCloud<pcl::PointXYZRGB>::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>);
 		odom = nav_msgs::Odometry::Ptr(new nav_msgs::Odometry);
 		odom_first = nav_msgs::Odometry::Ptr(new nav_msgs::Odometry);
-    }
+	}
 	pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_xyz_intensity_L;
 	pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_xyz_intensity_R;
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyz_rgb_L;
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyz_rgb_L;
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyz_rgb_R;
-    nav_msgs::Odometry::Ptr odom;
+	nav_msgs::Odometry::Ptr odom;
 	nav_msgs::Odometry::Ptr odom_first;
 };
-
-
-
-
 
 
 class distributedMapping : public paramsServer
@@ -221,8 +219,6 @@ public:
 	// 定义一个用于发布dcl创建的全局地图的发布者
 	ros::Publisher pubGlobal_all;
 	ros::Publisher pubGlobal_all_rgb;
-
-	
 
 private:
 	/*** robot team ***/
