@@ -5,6 +5,7 @@
 #include <nav_msgs/Odometry.h>
 #include <nav_msgs/Path.h>
 #include <std_msgs/Int8.h>
+#include <std_msgs/Float32MultiArray.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <tf/LinearMath/Quaternion.h>
@@ -13,6 +14,7 @@
 #include <flann/flann.hpp>
 #include <thread>
 #include <deque>
+
 // dcl_slam define
 #include "paramsServer.h"
 #include "scanContextDescriptor.h"
@@ -60,6 +62,7 @@ struct Point_odom
 	nav_msgs::Odometry::Ptr odom;
 	nav_msgs::Odometry::Ptr odom_first;
 };
+	
 
 
 class distributedMapping : public paramsServer
@@ -108,6 +111,11 @@ public:
 	void loopClosureThread();
 
 	void globalMapThread();
+
+	void transB2AHandler(const std_msgs::Float32MultiArray::ConstPtr &msg);
+
+	void transC2AHandler(const std_msgs::Float32MultiArray::ConstPtr &msg);
+		
 
 private:
 	void poseCovariance2msg(

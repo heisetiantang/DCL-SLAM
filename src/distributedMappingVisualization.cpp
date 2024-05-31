@@ -3,17 +3,22 @@
 #include <csignal>
 #include <pcl/io/pcd_io.h>
 bool flg_rgb_map_save = false;
-bool flg_intensity_map_save = false;
+#define DIR_OUTPUT std::getenv("HOME") + std::string("/out/dcl_output")
 std::string file_path = std::getenv("HOME") + std::string("/out/map");
 std::string file_name_xyzrgb = "globalMap_High_xyzrgb.pcd";
 std::string file_name_xyzi = "globalMap_High_xyzi.pcd";
+
+std::string trans_B2A = DIR_OUTPUT + "/trans_B2A.csv";
+std::string trans_C2A = DIR_OUTPUT + "/trans_C2A.csv";
+
 std::mutex mutex_xyzI, mutex_xyzRGB;
 
-// struct Frame_first frame_first;
 
-// pcl::PointCloud<pcl::PointXYZI>::Ptr frame_first_a(new pcl::PointCloud<pcl::PointXYZI>);
-// pcl::PointCloud<pcl::PointXYZI>::Ptr frame_first_b(new pcl::PointCloud<pcl::PointXYZI>);
-// pcl::PointCloud<pcl::PointXYZI>::Ptr frame_first_c(new pcl::PointCloud<pcl::PointXYZI>);
+
+// struct Frame_first frame_first;
+Eigen::Matrix4f transform_result_B2A = Eigen::Matrix4f::Identity();
+Eigen::Matrix4f transform_result_C2A = Eigen::Matrix4f::Identity();
+
 // 程序终止进程
 void Stop_flg(int sig)
 {
@@ -23,20 +28,99 @@ void Stop_flg(int sig)
   flg_rgb_map_save = true;
 }
 
+// 接收结果
+void distributedMapping::transB2AHandler(const std_msgs::Float32MultiArray::ConstPtr &msg)
+{
+  // ROS_INFO("接收到B2A的转换矩阵");
+  if (msg->data.size() == 16)
+  { // 确保数据大小符合4x4矩阵
+    for (int i = 0; i < 4; ++i)
+    {
+      for (int j = 0; j < 4; ++j)
+      {
+        transform_result_B2A(i, j) = msg->data[i * 4 + j];
+      }
+    }
+    // 打印转换后的矩阵
+    std::cout << "Received transform_result_B2A: \n"
+              << transform_result_B2A << std::endl;
+  }
+  else
+  {
+    ROS_WARN("Received data size does not match 4x4 matrix.");
+  }
+}
+
+void distributedMapping::transC2AHandler(const std_msgs::Float32MultiArray::ConstPtr &msg)
+{
+  // ROS_INFO("接收到C2A的转换矩阵");
+  if (msg->data.size() == 16)
+  { // 确保数据大小符合4x4矩阵
+    for (int i = 0; i < 4; ++i)
+    {
+      for (int j = 0; j < 4; ++j)
+      {
+        transform_result_C2A(i, j) = msg->data[i * 4 + j];
+      }
+    }
+    // 打印转换后的矩阵
+    std::cout << "Received transform_result_C2A: \n"
+              << transform_result_C2A << std::endl;
+  }
+  else
+  {
+    ROS_WARN("Received data size does not match 4x4 matrix.");
+  }
+}
+
+Eigen::Matrix4f readMatrixFromCSV(const std::string& filename) {
+    std::ifstream file(filename);
+    Eigen::Matrix4f matrix;
+    bool fileLocked = true;
+    
+    // 尝试读取文件，直到文件可用
+    while (fileLocked) {
+        if (file.is_open()) {
+            std::string line;
+            int row = 0;
+            while (std::getline(file, line) && row < 4) {
+                std::stringstream ss(line);
+                std::string cell;
+                int col = 0;
+                while (std::getline(ss, cell, ',') && col < 4) {
+                    matrix(row, col) = std::stof(cell);
+                    col++;
+                }
+                row++;
+            }
+            fileLocked = false; // 读取成功，退出循环
+        } else {
+            std::cerr << "无法打开文件进行读取: " << filename << std::endl;
+            // 文件被占用，等待一段时间后重新尝试打开
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            file.open(filename); // 重新尝试打开文件
+        }
+    }
+    
+    file.close();
+    return matrix;
+}
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
   class distributedMapping: publish visualization msg
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void distributedMapping::globalMapThread()
 {
-  ros::Rate rate(1.0 / map_publish_interval_);  // update global map per 4s (default)
+  ros::Rate rate(1.0 / map_publish_interval_); // update global map per 4s (default)
 
   while (ros::ok())
   {
     rate.sleep();
 
-    publishGlobalMap();  // global map visualization
 
-    publishLoopClosureConstraint();  // loop closure visualization
+    publishGlobalMap(); // global map visualization
+
+    publishLoopClosureConstraint(); // loop closure visualization
   }
 }
 
@@ -55,7 +139,7 @@ void distributedMapping::publishGlobalMap()
   Values poses_initial_guess_copy = *initial_values;
   pcl::PointCloud<PointPose3D>::Ptr poses_3d_cloud_copy(new pcl::PointCloud<PointPose3D>());
   pcl::PointCloud<PointPose6D>::Ptr poses_6d_cloud_copy(new pcl::PointCloud<PointPose6D>());
-  for (const Values::ConstKeyValuePair& key_value : poses_initial_guess_copy)
+  for (const Values::ConstKeyValuePair &key_value : poses_initial_guess_copy)
   {
     Symbol key = key_value.key;
     Pose3 pose = poses_initial_guess_copy.at<Pose3>(key);
@@ -99,8 +183,10 @@ void distributedMapping::publishGlobalMap()
     // 											  &pose_6d_tmp);
   }
 
+
+
   // if (!robots[id_].keyframe_cloud_rgb_array.empty())
-  if (0)  //暂时没有数据输出
+  if (0) // 暂时没有数据输出
   {
     // cout << "robots[id_].keyframe_cloud_rgb_array is not empty" << endl;
     // 仿照、将带颜色的点云拼接
@@ -177,49 +263,33 @@ void distributedMapping::publishGlobalMap()
     }
   }
 
-
-
-
-
-  // // ROS_WARN("当前机器人的id：%d", id_);
-  // if (id_ == 0 && !robots[id_].keyframe_cloud->empty())
-  // {
-  //   ROS_INFO("a 车不动");
-  //   frame_first.cloud_xyz_i_first_a = robots[id_].keyframe_cloud;
-  // }
-  // if (id_ == 1 && !robots[id_].keyframe_cloud->empty())
-  // {
-  //   ROS_INFO("b");
-  //   frame_first.cloud_xyz_i_first_b = robots[id_].keyframe_cloud;
-  //   // 设置一个转换函数用于pcl::transformPointCloud
-  //   Eigen::Matrix4f transform_result = Eigen::Matrix4f::Identity();
-  //   transform_result = init_guess_Get(id_);
-
-
-  //   transform_result = result_matrix_get(id_, transform_result);
-  //   // ROS_INFO("不 frame_first.cloud_xyz_i_first_a :%d",frame_first.cloud_xyz_i_first_a->size());
-
-
-  //   // 计算ndt变换矩阵
-  //   // transform_result = 
-  //   pcl::transformPointCloud(*global_map_keyframes, *global_map_keyframes, transform_result);
-  // }
-  // // if (id_ == 2 && !robots[id_].keyframe_cloud->empty())
-  // // {
-  // //   ROS_INFO("c");
-  // //   // 设置一个转换函数用于pcl::transformPointCloud
-  // //   Eigen::Matrix4f transform_result = Eigen::Matrix4f::Identity();
-  // //   transform_result = init_guess_Get(id_);
-
-  // //   pcl::transformPointCloud(*global_map_keyframes, *global_map_keyframes, transform_result);
-  // // }
-
-
+  // ROS_WARN("当前机器人的id：%d", id_);
+  if (id_ == 0)
+  {
+    // ROS_INFO("a 车不动");
+  }
+  if (id_ == 1)
+  {
+    // ROS_INFO("b");
+    cout<<"transform_result_B2A: \n"<<transform_result_B2A<<endl;
+    // 设置一个转换函数用于pcl::transformPointCloud
+    transform_result_B2A = readMatrixFromCSV(trans_B2A);
   
+    pcl::transformPointCloud(*global_map_keyframes, *global_map_keyframes, transform_result_B2A);
+  }
+  if (id_ == 2 )
+  {
+    // ROS_INFO("c");
+    // 设置一个转换函数用于pcl::transformPointCloud
+    cout<<"transform_result_C2A: \n"<<transform_result_C2A<<endl;
+    transform_result_C2A = readMatrixFromCSV(trans_C2A);
+
+    pcl::transformPointCloud(*global_map_keyframes, *global_map_keyframes, transform_result);
+  }
 
   // 发布未进行降采样的全局地图
   pcl::PointCloud<PointPose3D>::Ptr global_map_keyframes_copy(new pcl::PointCloud<PointPose3D>());
-  *global_map_keyframes_copy = *global_map_keyframes;  // 拷贝一份global_map_keyframes给global_map_keyframes_copy
+  *global_map_keyframes_copy = *global_map_keyframes; // 拷贝一份global_map_keyframes给global_map_keyframes_copy
   sensor_msgs::PointCloud2 global_map_msg_copy;
   pcl::toROSMsg(*global_map_keyframes_copy, global_map_msg_copy);
   global_map_msg_copy.header.stamp = robots[id_].time_cloud_input_stamp;

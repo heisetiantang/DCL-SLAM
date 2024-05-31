@@ -96,7 +96,15 @@ distributedMapping::distributedMapping() : paramsServer()
 	robot.keyframe_cloud_rgb.reset(new pcl::PointCloud<pcl::PointXYZRGB>());
 	robot.keyframe_cloud_rgb_array.clear();
 	robots.push_back(robot);
+
+
+
+
   }
+
+  // 
+   ros::Subscriber sub_trans_b2a = nh.subscribe<std_msgs::Float32MultiArray>("matrix_topic_b2a", 1, &distributedMapping::transB2AHandler, this);
+  ros::Subscriber sub_trans_c2a = nh.subscribe<std_msgs::Float32MultiArray>("matrix_topic_c2a", 1, &distributedMapping::transC2AHandler, this);
 
   /*** ros subscriber and publisher ***/
   // loop closure visualization

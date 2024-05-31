@@ -51,6 +51,8 @@ struct singleRobot
   ros::Subscriber sub_descriptors;
   ros::Publisher pub_descriptors;
 
+  
+
   /*** other ***/
   ros::Time time_cloud_input_stamp;								   // recent keyframe timestamp
   double time_cloud_input;										   // and its double type
