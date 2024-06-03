@@ -31,6 +31,7 @@
   	</include>
 
 	<!-- rosbag player node ->> you need to change bag file here!!! -->
+	<!-- rosbag player node ->> you need to change bag file here!!! -->
 	<arg name="SYSU_bag" value="$(env HOME)/rosbag/qy3/test_abc_3.bag"/>
 		<remap from="/a/a/scan_undistorted" to="/a/scan_undistorted"/>
 		<remap from="/b/a/scan_undistorted" to="/b/scan_undistorted"/>
@@ -40,7 +41,7 @@
 		<remap from="/c/a/scan_rgb" to="/c/scan_rgb"/> 
 		<remap from="/a/a/odom" to="/a/odom"/>
 		<remap from="/b/a/odom" to="/b/odom"/>
-		<remap from="/c/a/odom" to="/c/odom"/>  -->
+		<remap from="/c/a/odom" to="/c/odom"/> 
 
 	<node name="player2" pkg="rosbag" type="play" output="screen" args="-r 1 -q -d 2 $(arg SYSU_bag)"/>
 	<!-- <arg name="SYSU_bag" value="$(env HOME)/rosbag/qy6/2024-05-23-15-17-10.bag"/>
@@ -49,7 +50,6 @@
 		<remap from="/c/scan_rgb" to="/a/scan_rgb"/>
 		<remap from="/c/odom" to="/a/odom"/>
 	<node name="player2" pkg="rosbag" type="play" output="screen" args="-r 1 -q -d 2 $(arg SYSU_bag)"/> -->
-
 
 	
 </launch>
