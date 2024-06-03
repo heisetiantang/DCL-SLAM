@@ -112,11 +112,6 @@ public:
 
 	void globalMapThread();
 
-	void transB2AHandler(const std_msgs::Float32MultiArray::ConstPtr &msg);
-
-	void transC2AHandler(const std_msgs::Float32MultiArray::ConstPtr &msg);
-		
-
 private:
 	void poseCovariance2msg(
 		const graph_utils::PoseWithCovariance &pose,

@@ -13,8 +13,6 @@ std::string trans_C2A = DIR_OUTPUT + "/trans_C2A.csv";
 
 std::mutex mutex_xyzI, mutex_xyzRGB;
 
-
-
 // struct Frame_first frame_first;
 Eigen::Matrix4f transform_result_B2A = Eigen::Matrix4f::Identity();
 Eigen::Matrix4f transform_result_C2A = Eigen::Matrix4f::Identity();
@@ -29,81 +27,44 @@ void Stop_flg(int sig)
 }
 
 // 接收结果
-void distributedMapping::transB2AHandler(const std_msgs::Float32MultiArray::ConstPtr &msg)
+Eigen::Matrix4f readMatrixFromCSV(const std::string &filename)
 {
-  // ROS_INFO("接收到B2A的转换矩阵");
-  if (msg->data.size() == 16)
-  { // 确保数据大小符合4x4矩阵
-    for (int i = 0; i < 4; ++i)
-    {
-      for (int j = 0; j < 4; ++j)
-      {
-        transform_result_B2A(i, j) = msg->data[i * 4 + j];
-      }
-    }
-    // 打印转换后的矩阵
-    std::cout << "Received transform_result_B2A: \n"
-              << transform_result_B2A << std::endl;
-  }
-  else
-  {
-    ROS_WARN("Received data size does not match 4x4 matrix.");
-  }
-}
+  std::ifstream file(filename);
+  Eigen::Matrix4f matrix;
+  bool fileLocked = true;
 
-void distributedMapping::transC2AHandler(const std_msgs::Float32MultiArray::ConstPtr &msg)
-{
-  // ROS_INFO("接收到C2A的转换矩阵");
-  if (msg->data.size() == 16)
-  { // 确保数据大小符合4x4矩阵
-    for (int i = 0; i < 4; ++i)
-    {
-      for (int j = 0; j < 4; ++j)
-      {
-        transform_result_C2A(i, j) = msg->data[i * 4 + j];
-      }
-    }
-    // 打印转换后的矩阵
-    std::cout << "Received transform_result_C2A: \n"
-              << transform_result_C2A << std::endl;
-  }
-  else
+  // 尝试读取文件，直到文件可用
+  while (fileLocked)
   {
-    ROS_WARN("Received data size does not match 4x4 matrix.");
-  }
-}
-
-Eigen::Matrix4f readMatrixFromCSV(const std::string& filename) {
-    std::ifstream file(filename);
-    Eigen::Matrix4f matrix;
-    bool fileLocked = true;
-    
-    // 尝试读取文件，直到文件可用
-    while (fileLocked) {
-        if (file.is_open()) {
-            std::string line;
-            int row = 0;
-            while (std::getline(file, line) && row < 4) {
-                std::stringstream ss(line);
-                std::string cell;
-                int col = 0;
-                while (std::getline(ss, cell, ',') && col < 4) {
-                    matrix(row, col) = std::stof(cell);
-                    col++;
-                }
-                row++;
-            }
-            fileLocked = false; // 读取成功，退出循环
-        } else {
-            std::cerr << "无法打开文件进行读取: " << filename << std::endl;
-            // 文件被占用，等待一段时间后重新尝试打开
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            file.open(filename); // 重新尝试打开文件
+    if (file.is_open())
+    {
+      std::string line;
+      int row = 0;
+      while (std::getline(file, line) && row < 4)
+      {
+        std::stringstream ss(line);
+        std::string cell;
+        int col = 0;
+        while (std::getline(ss, cell, ',') && col < 4)
+        {
+          matrix(row, col) = std::stof(cell);
+          col++;
         }
+        row++;
+      }
+      fileLocked = false; // 读取成功，退出循环
     }
-    
-    file.close();
-    return matrix;
+    else
+    {
+      std::cerr << "无法打开文件进行读取: " << filename << std::endl;
+      // 文件被占用，等待一段时间后重新尝试打开
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      file.open(filename); // 重新尝试打开文件
+    }
+  }
+
+  file.close();
+  return matrix;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -116,7 +77,6 @@ void distributedMapping::globalMapThread()
   while (ros::ok())
   {
     rate.sleep();
-
 
     publishGlobalMap(); // global map visualization
 
@@ -182,8 +142,6 @@ void distributedMapping::publishGlobalMap()
     // *global_map_keyframes += *transformPointCloud(robots[id_].keyframe_cloud_array[pose_6d_tmp.intensity],
     // 											  &pose_6d_tmp);
   }
-
-
 
   // if (!robots[id_].keyframe_cloud_rgb_array.empty())
   if (0) // 暂时没有数据输出
@@ -271,20 +229,21 @@ void distributedMapping::publishGlobalMap()
   if (id_ == 1)
   {
     // ROS_INFO("b");
-    cout<<"transform_result_B2A: \n"<<transform_result_B2A<<endl;
+    // cout << "transform_result_B2A: \n"
+    //      << transform_result_B2A << endl;
     // 设置一个转换函数用于pcl::transformPointCloud
     transform_result_B2A = readMatrixFromCSV(trans_B2A);
-  
+
     pcl::transformPointCloud(*global_map_keyframes, *global_map_keyframes, transform_result_B2A);
   }
-  if (id_ == 2 )
+  if (id_ == 2)
   {
     // ROS_INFO("c");
     // 设置一个转换函数用于pcl::transformPointCloud
-    cout<<"transform_result_C2A: \n"<<transform_result_C2A<<endl;
+    // cout << "transform_result_C2A: \n"
+    //      << transform_result_C2A << endl;
     transform_result_C2A = readMatrixFromCSV(trans_C2A);
-
-    pcl::transformPointCloud(*global_map_keyframes, *global_map_keyframes, transform_result);
+    pcl::transformPointCloud(*global_map_keyframes, *global_map_keyframes, transform_result_C2A);
   }
 
   // 发布未进行降采样的全局地图
