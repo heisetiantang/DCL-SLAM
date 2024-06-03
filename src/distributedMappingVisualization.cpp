@@ -229,20 +229,22 @@ void distributedMapping::publishGlobalMap()
   if (id_ == 1)
   {
     // ROS_INFO("b");
-    // cout << "transform_result_B2A: \n"
-    //      << transform_result_B2A << endl;
     // 设置一个转换函数用于pcl::transformPointCloud
     transform_result_B2A = readMatrixFromCSV(trans_B2A);
+        // adjustTransformation(transform_result_B2A);    
 
+    cout << "transform_result_B2A: \n"
+         << transform_result_B2A << endl;
     pcl::transformPointCloud(*global_map_keyframes, *global_map_keyframes, transform_result_B2A);
   }
   if (id_ == 2)
   {
     // ROS_INFO("c");
     // 设置一个转换函数用于pcl::transformPointCloud
-    // cout << "transform_result_C2A: \n"
-    //      << transform_result_C2A << endl;
     transform_result_C2A = readMatrixFromCSV(trans_C2A);
+    // adjustTransformation(transform_result_C2A);
+    cout << "transform_result_C2A: \n"
+         << transform_result_C2A << endl;
     pcl::transformPointCloud(*global_map_keyframes, *global_map_keyframes, transform_result_C2A);
   }
 

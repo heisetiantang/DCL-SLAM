@@ -1,6 +1,9 @@
+// file iostream
+#include <fstream>
+#include <iostream>
+// ros
 #include <ros/ros.h>
 #include <ros/console.h>
-#include <nav_msgs/Path.h>
 #include <std_msgs/String.h>
 #include <std_msgs/Float32MultiArray.h>
 #include <geometry_msgs/Quaternion.h>
@@ -15,29 +18,25 @@
 #include <condition_variable>
 #include <gtsam/nonlinear/ISAM2.h>
 #include <Eigen/Geometry>
-#include <pcl/visualization/pcl_visualizer.h>
 
 // dcl_slam define
+#include "distributedMapping.h"
 #include "paramsServer.h"
 #include "dcl_slam/loop_info.h"
 #include "dcl_slam/global_descriptor.h"
 #include "dcl_slam/neighbor_estimate.h"
 
-// mapping
-// #include "distributed_mapper/distributed_mapper.h"
-// #include "distributed_mapper/distributed_mapper_utils.h"
+// pcl滤波头文件
+#include <pcl/filters/voxel_grid.h>
+#include <pcl/visualization/pcl_visualizer.h>
 
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
 #include <message_filters/sync_policies/approximate_time.h>
 
-// file iostream
-#include <fstream>
-#include <iostream>
 // log
 #include <glog/logging.h>
 
-#include "distributedMapping.h"
 #include "NdtMatch/ndt_match.h"
 
 using namespace gtsam;
@@ -48,6 +47,7 @@ std::mutex mtx;                     // 进程锁
 std::condition_variable sig_buffer; // 终止信号
 bool flg_stop = false;              // 程序退出标志位
 bool time_count = false;            // 每隔10秒输出一个标志位
+
 // 定义变换矩阵的保存位置
 #define DIR_OUTPUT std::getenv("HOME") + std::string("/out/dcl_output")
 std::string trans_B2A = DIR_OUTPUT + "/trans_B2A.csv";
@@ -69,8 +69,8 @@ Eigen::Matrix4f result_C2B_pre = init_guess_Get(3);
 /* ********************函数部分*********************** */
 void writeMatrixToCSV(const std::string &filename, const Eigen::Matrix4f &matrix)
 {
-    // std::ofstream file(filename, std::ios::app); // 打开文件以追加方式写入
-    std::ofstream file(filename, std::ios::out); // 打开文件以覆盖方式写入
+    std::ofstream file(filename, std::ios::app); // 打开文件以追加方式写入
+    // std::ofstream file(filename, std::ios::out); // 打开文件以覆盖方式写入
     if (file.is_open())
     {
         for (int i = 0; i < matrix.rows(); ++i)
@@ -155,6 +155,17 @@ void Callback(const sensor_msgs::PointCloud2ConstPtr &pointMsgXYZI_A,
     if (!pointMsgXYZI_C->width == 0)
         pcl::fromROSMsg(*pointMsgXYZI_C, *cloud_temp_c);
 
+    // 对于点云进行滤波处理
+    pcl::VoxelGrid<pcl::PointXYZI> voxel_grid_filter;
+    voxel_grid_filter.setLeafSize(0.2, 0.2, 0.2);
+
+    voxel_grid_filter.setInputCloud(cloud_temp_a);
+    voxel_grid_filter.filter(*cloud_temp_a);
+    voxel_grid_filter.setInputCloud(cloud_temp_b);
+    voxel_grid_filter.filter(*cloud_temp_b);
+    voxel_grid_filter.setInputCloud(cloud_temp_c);
+    voxel_grid_filter.filter(*cloud_temp_c);
+
     if (cloud_temp_a->empty() && cloud_temp_b->empty() && cloud_temp_c->empty())
     {
         // ROS_INFO("三辆车点云都为空");
@@ -164,43 +175,45 @@ void Callback(const sensor_msgs::PointCloud2ConstPtr &pointMsgXYZI_A,
 
     if (!cloud_temp_a->empty() && !cloud_temp_b->empty() && !cloud_temp_c->empty())
     {
-        ROS_INFO("B2A ");
-        cout << "result_B2A: " << result_B2A << endl;
-        cout << "result_B2A_pre: " << result_B2A_pre << endl;
+        ROS_INFO("B2A  &&  C2A ");
+        // cout << "result_B2A: " << result_B2A << endl;
+        // cout << "result_B2A_pre: " << result_B2A_pre << endl;
 
         // 计算机器人b到a的变换矩阵
+        result_B2A = init_guess_Get(1);
         result_B2A = NDTMatching_M(cloud_temp_b, cloud_temp_a, result_B2A_pre);
         result_B2A_pre = result_B2A;
-        ROS_INFO("C2A");
+
         result_C2A = init_guess_Get(2);
         result_C2A = NDTMatching_M(cloud_temp_c, cloud_temp_a, result_C2A);
+
         writeMatrixToCSV(trans_B2A, result_B2A);
         writeMatrixToCSV(trans_C2A, result_C2A);
         return;
     }
 
-    if (!cloud_temp_a->empty() && !cloud_temp_b->empty())
-    {
-        ROS_INFO("C车点云为空");
-        result_B2A = init_guess_Get(1);
-        result_B2A = NDTMatching_M(cloud_temp_b, cloud_temp_a, result_B2A);
-        writeMatrixToCSV(trans_B2A, result_B2A);
-    }
-    if (!cloud_temp_a->empty() && !cloud_temp_c->empty())
-    {
-        ROS_INFO("B车点云为空");
-        result_C2A = init_guess_Get(2);
-        result_C2A = NDTMatching_M(cloud_temp_c, cloud_temp_a, result_C2A);
-        writeMatrixToCSV(trans_C2A, result_C2A);
-    }
-    if (!cloud_temp_b->empty() && !cloud_temp_c->empty())
-    {
-        ROS_INFO("A车点云为空");
-        result_C2B = init_guess_Get(3);
-        result_C2B = NDTMatching_M(cloud_temp_c, cloud_temp_b, result_C2B);
-        writeMatrixToCSV(trans_C2B, result_C2B);
-    }
-
+    /*     if (!cloud_temp_a->empty() && !cloud_temp_b->empty())
+        {
+            ROS_INFO("C车点云为空");
+            result_B2A = init_guess_Get(1);
+            result_B2A = NDTMatching_M(cloud_temp_b, cloud_temp_a, result_B2A);
+            writeMatrixToCSV(trans_B2A, result_B2A);
+        }
+        if (!cloud_temp_a->empty() && !cloud_temp_c->empty())
+        {
+            ROS_INFO("B车点云为空");
+            result_C2A = init_guess_Get(2);
+            result_C2A = NDTMatching_M(cloud_temp_c, cloud_temp_a, result_C2A);
+            writeMatrixToCSV(trans_C2A, result_C2A);
+        }
+        if (!cloud_temp_b->empty() && !cloud_temp_c->empty())
+        {
+            ROS_INFO("A车点云为空");
+            result_C2B = init_guess_Get(3);
+            result_C2B = NDTMatching_M(cloud_temp_c, cloud_temp_b, result_C2B);
+            writeMatrixToCSV(trans_C2B, result_C2B);
+        }
+     */
     /*     if (!pointMsgXYZI_B->width == 0)
         {
             ROS_INFO("B fabu ");
