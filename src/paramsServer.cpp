@@ -99,7 +99,7 @@ paramsServer::paramsServer()
   nh.param<int>(ns + "/history_keyframe_search_num", history_keyframe_search_num_, 16);
   nh.param<float>(ns + "/fitness_score_threshold", fitness_score_threshold_, 0.2);
   nh.param<int>(ns + "/ransac_maximum_iteration", ransac_maximum_iteration_, 1000);
-  nh.param<float>(ns + "/ransac_threshold", ransac_threshold_, 0.5);
+  nh.param<float>(ns + "/ransac_threshold", ransac_threshold_, 0.6);
   nh.param<float>(ns + "/ransac_outlier_reject_threshold", ransac_outlier_reject_threshold_, 0.05);
 
   // keyframe params

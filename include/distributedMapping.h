@@ -5,6 +5,7 @@
 #include <nav_msgs/Odometry.h>
 #include <nav_msgs/Path.h>
 #include <std_msgs/Int8.h>
+#include <std_msgs/Float32MultiArray.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <tf/LinearMath/Quaternion.h>
@@ -13,6 +14,7 @@
 #include <flann/flann.hpp>
 #include <thread>
 #include <deque>
+
 // dcl_slam define
 #include "paramsServer.h"
 #include "scanContextDescriptor.h"
@@ -42,26 +44,25 @@ using namespace gtsam;
 using namespace std;
 
 // 定义结构体
-struct Point_odom {
-	Point_odom() {
+struct Point_odom
+{
+	Point_odom()
+	{
 		cloud_xyz_intensity_L = pcl::PointCloud<pcl::PointXYZI>::Ptr(new pcl::PointCloud<pcl::PointXYZI>);
 		cloud_xyz_intensity_R = pcl::PointCloud<pcl::PointXYZI>::Ptr(new pcl::PointCloud<pcl::PointXYZI>);
 		cloud_xyz_rgb_L = pcl::PointCloud<pcl::PointXYZRGB>::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>);
 		cloud_xyz_rgb_R = pcl::PointCloud<pcl::PointXYZRGB>::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>);
 		odom = nav_msgs::Odometry::Ptr(new nav_msgs::Odometry);
 		odom_first = nav_msgs::Odometry::Ptr(new nav_msgs::Odometry);
-    }
+	}
 	pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_xyz_intensity_L;
 	pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_xyz_intensity_R;
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyz_rgb_L;
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyz_rgb_L;
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyz_rgb_R;
-    nav_msgs::Odometry::Ptr odom;
+	nav_msgs::Odometry::Ptr odom;
 	nav_msgs::Odometry::Ptr odom_first;
 };
-
-
-
-
+	
 
 
 class distributedMapping : public paramsServer

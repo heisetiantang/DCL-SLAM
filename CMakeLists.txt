@@ -18,6 +18,9 @@ find_package(catkin REQUIRED COMPONENTS
   nav_msgs
   message_generation
   visualization_msgs
+
+  NdtMatch #自定义匹配包
+
 )
 
 find_package(Boost REQUIRED COMPONENTS filesystem system thread)
@@ -55,6 +58,9 @@ catkin_package(
   message_generation
   visualization_msgs
   distributed_mapper_catkin
+  
+  NdtMatch #自定义匹配包
+
   LIBRARIES dcl_slam
 )
 
