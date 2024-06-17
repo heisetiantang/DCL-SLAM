@@ -37,7 +37,7 @@
 // log
 #include <glog/logging.h>
 
-#include "NdtMatch/ndt_match.h"
+#include "ndt_match.h"
 
 using namespace gtsam;
 using namespace std;
