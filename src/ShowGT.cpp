@@ -175,7 +175,7 @@ void Callback(const sensor_msgs::PointCloud2ConstPtr &pointMsgXYZI_A,
 
     if (!cloud_temp_a->empty() && !cloud_temp_b->empty() && !cloud_temp_c->empty())
     {
-        ROS_INFO("B2A  &&  C2A ");
+        // ROS_INFO("B2A  &&  C2A ");
         // cout << "result_B2A: " << result_B2A << endl;
         // cout << "result_B2A_pre: " << result_B2A_pre << endl;
 
