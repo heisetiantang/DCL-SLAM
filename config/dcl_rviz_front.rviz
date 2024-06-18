@@ -162,7 +162,7 @@ Visualization Manager:
           Color: 255; 255; 255
           Color Transformer: RGB8
           Decay Time: 0
-          Enabled: false
+          Enabled: true
           Invert Rainbow: false
           Max Color: 255; 255; 255
           Min Color: 0; 0; 0
@@ -177,7 +177,7 @@ Visualization Manager:
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
-          Value: false
+          Value: true
         - Alpha: 1
           Buffer Length: 1
           Class: rviz/Path
@@ -469,7 +469,7 @@ Visualization Manager:
           Color: 255; 255; 255
           Color Transformer: RGB8
           Decay Time: 0
-          Enabled: false
+          Enabled: true
           Invert Rainbow: false
           Max Color: 255; 255; 255
           Min Color: 0; 0; 0
@@ -484,7 +484,7 @@ Visualization Manager:
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
-          Value: false
+          Value: true
         - Alpha: 1
           Buffer Length: 1
           Class: rviz/Path
@@ -2544,7 +2544,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 35.74690246582031
+      Distance: 71.85210418701172
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -2552,17 +2552,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -1.7661080360412598
-        Y: -14.384078979492188
-        Z: 0.00011541584535734728
+        X: 3.270256996154785
+        Y: -6.649002552032471
+        Z: 0.00011923054262297228
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7802035212516785
+      Pitch: 1.399796485900879
       Target Frame: world
-      Yaw: 3.513947010040283
+      Yaw: 3.1339457035064697
     Saved: ~
 Window Geometry:
   Displays:
@@ -2579,4 +2579,4 @@ Window Geometry:
     collapsed: true
   Width: 1866
   X: 214
-  Y: 88
+  Y: 51
