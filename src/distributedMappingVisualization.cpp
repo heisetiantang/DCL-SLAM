@@ -85,7 +85,7 @@ void distributedMapping::globalMapThread()
     // 
     if (std::chrono::system_clock::now() >= next_time_save)
     {
-      next_time_save = std::chrono::system_clock::now() + std::chrono::seconds(10);
+      next_time_save = std::chrono::system_clock::now() + std::chrono::seconds(30);
       flg_rgb_map_save = true;
     }
 

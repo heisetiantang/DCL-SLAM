@@ -94,7 +94,7 @@ Visualization Manager:
       Name: links
     - Class: rviz/Group
       Displays:
-        - Alpha: 0.5
+        - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
             Max Value: 10
@@ -115,7 +115,7 @@ Visualization Manager:
           Queue Size: 10
           Selectable: true
           Size (Pixels): 2
-          Size (m): 0.10000000149011612
+          Size (m): 0.20000000298023224
           Style: Boxes
           Topic: /a/distributedMapping/globalMap
           Unreliable: false
@@ -134,7 +134,7 @@ Visualization Manager:
           Color: 255; 255; 255
           Color Transformer: Intensity
           Decay Time: 0
-          Enabled: true
+          Enabled: false
           Invert Rainbow: false
           Max Color: 255; 255; 255
           Min Color: 0; 0; 0
@@ -149,7 +149,7 @@ Visualization Manager:
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
-          Value: true
+          Value: false
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
@@ -401,7 +401,7 @@ Visualization Manager:
       Name: Robot 0
     - Class: rviz/Group
       Displays:
-        - Alpha: 0.5
+        - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
             Max Value: 10
@@ -422,7 +422,7 @@ Visualization Manager:
           Queue Size: 10
           Selectable: true
           Size (Pixels): 2
-          Size (m): 0.10000000149011612
+          Size (m): 0.20000000298023224
           Style: Boxes
           Topic: /b/distributedMapping/globalMap
           Unreliable: false
@@ -441,7 +441,7 @@ Visualization Manager:
           Color: 255; 255; 255
           Color Transformer: Intensity
           Decay Time: 0
-          Enabled: true
+          Enabled: false
           Invert Rainbow: false
           Max Color: 255; 255; 255
           Min Color: 0; 0; 0
@@ -456,7 +456,7 @@ Visualization Manager:
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
-          Value: true
+          Value: false
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
@@ -708,7 +708,7 @@ Visualization Manager:
       Name: Robot 1
     - Class: rviz/Group
       Displays:
-        - Alpha: 0.5
+        - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
             Max Value: 10
@@ -729,7 +729,7 @@ Visualization Manager:
           Queue Size: 10
           Selectable: true
           Size (Pixels): 2
-          Size (m): 0.10000000149011612
+          Size (m): 0.20000000298023224
           Style: Boxes
           Topic: /c/distributedMapping/globalMap
           Unreliable: false
@@ -748,7 +748,7 @@ Visualization Manager:
           Color: 255; 255; 255
           Color Transformer: Intensity
           Decay Time: 0
-          Enabled: true
+          Enabled: false
           Invert Rainbow: false
           Max Color: 255; 255; 255
           Min Color: 0; 0; 0
@@ -763,7 +763,7 @@ Visualization Manager:
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
-          Value: true
+          Value: false
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
@@ -776,7 +776,7 @@ Visualization Manager:
           Color: 255; 255; 255
           Color Transformer: RGB8
           Decay Time: 0
-          Enabled: false
+          Enabled: true
           Invert Rainbow: false
           Max Color: 255; 255; 255
           Min Color: 0; 0; 0
@@ -791,7 +791,7 @@ Visualization Manager:
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
-          Value: false
+          Value: true
         - Alpha: 1
           Buffer Length: 1
           Class: rviz/Path
@@ -2544,7 +2544,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 71.85210418701172
+      Distance: 17.215526580810547
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -2552,17 +2552,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 3.270256996154785
-        Y: -6.649002552032471
-        Z: 0.00011923054262297228
+        X: -5.384198188781738
+        Y: -6.901113033294678
+        Z: 0.00012304523261263967
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.399796485900879
+      Pitch: 0.814797043800354
       Target Frame: world
-      Yaw: 3.1339457035064697
+      Yaw: 3.4189445972442627
     Saved: ~
 Window Geometry:
   Displays:
@@ -2578,5 +2578,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1866
-  X: 214
-  Y: 51
+  X: 278
+  Y: 371
