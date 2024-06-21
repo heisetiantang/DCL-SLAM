@@ -83,13 +83,16 @@ void distributedMapping::globalMapThread()
   {
     rate.sleep();
     // 
+
+
+    publishGlobalMap(); // global map visualization
+
     if (std::chrono::system_clock::now() >= next_time_save)
     {
       next_time_save = std::chrono::system_clock::now() + std::chrono::seconds(30);
       flg_rgb_map_save = true;
     }
 
-    publishGlobalMap(); // global map visualization
 
     publishLoopClosureConstraint(); // loop closure visualization
   }
@@ -205,9 +208,7 @@ void distributedMapping::publishGlobalMap()
   // 颜色点云部分
   if (!robots[id_].keyframe_cloud_rgb_array.empty())
   // if (0) // 暂时没有数据输出
-  {
-    // cout << "robots[id_].keyframe_cloud_rgb_array is not empty" << endl;
-    // 仿照、将带颜色的点云拼接
+  {    // 仿照、将带颜色的点云拼接
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr global_map_keyframes_rgb(new pcl::PointCloud<pcl::PointXYZRGB>());
     // pcl::PointCloud<pcl::PointXYZRGB>::Ptr global_map_keyframes_rgb_ds(new pcl::PointCloud<pcl::PointXYZRGB>());
     for (size_t i = 0; i < (int)indices.size(); ++i)
@@ -289,7 +290,9 @@ void distributedMapping::publishGlobalMap()
         ROS_WARN("robot:%s的地图保存", std::to_string(id_).c_str());
 
       }
-      // 创建点云指针
+      if (id_ == 0)
+      {
+// 创建点云指针
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_a(new pcl::PointCloud<pcl::PointXYZRGB>);
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_b(new pcl::PointCloud<pcl::PointXYZRGB>);
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_c(new pcl::PointCloud<pcl::PointXYZRGB>);
@@ -320,7 +323,7 @@ void distributedMapping::publishGlobalMap()
       pcl::io::savePCDFileASCII(file_name_xyzrgb, *cloud_merged);
       std::cout << "Saved merged cloud to " << file_name_xyzrgb << std::endl;
 
-      mutex_xyzRGB.unlock();
+      mutex_xyzRGB.unlock();      }
 
       flg_rgb_map_save = false;
     }

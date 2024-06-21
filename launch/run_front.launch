@@ -49,10 +49,8 @@
 		<remap from="/c/scan_rgb" to="/a/scan_rgb"/>
 		<remap from="/c/odom" to="/a/odom"/>
 	<node name="player2" pkg="rosbag" type="play" output="screen" args="-r 1 -q -d 2 $(arg SYSU_bag)"/> -->
-	<!-- <arg name="SYSU_bag" value="$(env HOME)/rosbag/qy_6_18/2024-06-18-11-21-55.bag"/> -->
-		<!-- <remap from="/c/scan_undistorted" to="/a/scan_undistorted"/>
-		<remap from="/c/scan_rgb" to="/a/scan_rgb"/>
-		<remap from="/c/odom" to="/a/odom"/> -->
-	<!-- <node name="player2" pkg="rosbag" type="play" output="screen" args="-r 1 -q -d 2 $(arg SYSU_bag)"/> -->
+	<arg name="SYSU_bag" value="$(env HOME)/rosbag/qy_6_18/2024-06-18-11-21-55.bag"/> 
+		
+	<node name="player2" pkg="rosbag" type="play" output="screen" args="-r 1 -q -d 2 $(arg SYSU_bag)"/>
 	
 </launch>

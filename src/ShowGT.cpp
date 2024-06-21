@@ -168,27 +168,36 @@ void Callback(const sensor_msgs::PointCloud2ConstPtr &pointMsgXYZI_A,
 
     if (cloud_temp_a->empty() && cloud_temp_b->empty() && cloud_temp_c->empty())
     {
-        // ROS_INFO("三辆车点云都为空");
-        // 清空三个文件
         return;
     }
 
     if (!cloud_temp_a->empty() && !cloud_temp_b->empty() && !cloud_temp_c->empty())
     {
         ROS_INFO("B2A  &&  C2A ");
-        // cout << "result_B2A: " << result_B2A << endl;
-        // cout << "result_B2A_pre: " << result_B2A_pre << endl;
 
-        // 计算机器人b到a的变换矩阵
+        // 从b到a的变换矩阵
         result_B2A = init_guess_Get(1);
-        result_B2A = NDTMatching_M(cloud_temp_b, cloud_temp_a, result_B2A_pre);
-        result_B2A_pre = result_B2A;
+        result_B2A = NDTMatching_M(cloud_temp_b, cloud_temp_a, result_B2A);
+        // result_B2A_pre = result_B2A;
+        float score_B2A = getScore(1);
+        if (score_B2A < 0.5)
+        {
+            ROS_INFO("写入B2A score: %f", score_B2A);
+            writeMatrixToCSV(trans_B2A, result_B2A);
+        }
 
+        // 从c到a的变换矩阵
         result_C2A = init_guess_Get(2);
         result_C2A = NDTMatching_M(cloud_temp_c, cloud_temp_a, result_C2A);
+        result_C2A_pre = result_C2A;
+        float score_C2A = getScore(2);
 
-        writeMatrixToCSV(trans_B2A, result_B2A);
-        writeMatrixToCSV(trans_C2A, result_C2A);
+        if (score_C2A < 0.5)
+        {
+            ROS_INFO("写入C2A score: %f", score_C2A);
+            writeMatrixToCSV(trans_C2A, result_C2A);
+        }
+
         return;
     }
 
