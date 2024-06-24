@@ -29,6 +29,7 @@ void Stop_flg(int sig)
   // 调用global_map_keyframes_rgb
   //  输出rgb地图
   flg_rgb_map_save = true;
+  flg_map_merge = true;
 }
 
 // 接收结果
