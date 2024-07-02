@@ -29,7 +29,6 @@ void Stop_flg(int sig)
   // 调用global_map_keyframes_rgb
   //  输出rgb地图
   flg_rgb_map_save = true;
-  flg_map_merge = true;
 }
 
 // 接收结果
@@ -229,7 +228,7 @@ void distributedMapping::publishGlobalMap()
       // ROS_WARN("robot_id:%s", std::to_string(id_).c_str());
       // 设置一个转换函数用于pcl::transformPointCloud
       transform_result_B2A = readMatrixFromCSV(trans_B2A);
-      // adjustTransformation(transform_result_B2A);
+      adjustTransformation(transform_result_B2A);
 
       // cout << "transform_result_B2A: \n"
       //      << transform_result_B2A << endl;
@@ -240,7 +239,7 @@ void distributedMapping::publishGlobalMap()
       // ROS_WARN("robot_id:%s", std::to_string(id_).c_str());
       // 设置一个转换函数用于pcl::transformPointCloud
       transform_result_C2A = readMatrixFromCSV(trans_C2A);
-      // adjustTransformation(transform_result_C2A);
+      adjustTransformation(transform_result_C2A);
       // cout << "transform_result_C2A: \n"
       //      << transform_result_C2A << endl;
       pcl::transformPointCloud(*global_map_keyframes_rgb, *global_map_keyframes_rgb, transform_result_C2A);
