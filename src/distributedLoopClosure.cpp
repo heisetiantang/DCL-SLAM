@@ -715,8 +715,8 @@ void distributedMapping::loopClosureThread()
 
 	performIntraLoopClosure(); // find intra-loop with descriptor
 
-	performInterLoopClosure(); // find inter-loop with descriptor
+	// performInterLoopClosure(); // find inter-loop with descriptor
 
-	performExternLoopClosure(); // verify all inter-loop here
+	// performExternLoopClosure(); // verify all inter-loop here
   }
 }

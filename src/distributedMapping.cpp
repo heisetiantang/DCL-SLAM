@@ -1,5 +1,7 @@
 #include "distributedMapping.h"
 
+int lowest_id_included_number = 0;
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	class distributedMapping: handle message callback 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -472,6 +474,8 @@ bool distributedMapping::saveFrame(
 	if(abs(roll) < keyframe_angle_threshold_ && abs(pitch) < keyframe_angle_threshold_ && 
 		abs(yaw) < keyframe_angle_threshold_ && sqrt(x*x + y*y + z*z) < keyframe_distance_threshold_)
 	{
+		lowest_id_included_number++;
+		// ROS_INFO("机器人%d点数过近去除的帧数%d",id_,lowest_id_included_number);
 		return false;
 	}
 

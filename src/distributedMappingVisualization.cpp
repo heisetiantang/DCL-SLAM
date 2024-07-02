@@ -20,7 +20,7 @@ std::mutex mutex_xyzI, mutex_xyzRGB;
 // struct Frame_first frame_first;
 Eigen::Matrix4f transform_result_B2A = Eigen::Matrix4f::Identity();
 Eigen::Matrix4f transform_result_C2A = Eigen::Matrix4f::Identity();
-// 
+//
 
 // 程序终止进程
 void Stop_flg(int sig)
@@ -29,7 +29,6 @@ void Stop_flg(int sig)
   // 调用global_map_keyframes_rgb
   //  输出rgb地图
   flg_rgb_map_save = true;
-  flg_map_merge = true;
 }
 
 // 接收结果
@@ -83,17 +82,14 @@ void distributedMapping::globalMapThread()
   while (ros::ok())
   {
     rate.sleep();
-    // 
-
-
-    publishGlobalMap(); // global map visualization
-
+    //
     if (std::chrono::system_clock::now() >= next_time_save)
     {
       next_time_save = std::chrono::system_clock::now() + std::chrono::seconds(30);
       flg_rgb_map_save = true;
     }
 
+    publishGlobalMap(); // global map visualization
 
     publishLoopClosureConstraint(); // loop closure visualization
   }
@@ -209,7 +205,7 @@ void distributedMapping::publishGlobalMap()
   // 颜色点云部分
   if (!robots[id_].keyframe_cloud_rgb_array.empty())
   // if (0) // 暂时没有数据输出
-  {    // 仿照、将带颜色的点云拼接
+  { // 仿照、将带颜色的点云拼接
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr global_map_keyframes_rgb(new pcl::PointCloud<pcl::PointXYZRGB>());
     // pcl::PointCloud<pcl::PointXYZRGB>::Ptr global_map_keyframes_rgb_ds(new pcl::PointCloud<pcl::PointXYZRGB>());
     for (size_t i = 0; i < (int)indices.size(); ++i)
@@ -229,7 +225,7 @@ void distributedMapping::publishGlobalMap()
       // ROS_WARN("robot_id:%s", std::to_string(id_).c_str());
       // 设置一个转换函数用于pcl::transformPointCloud
       transform_result_B2A = readMatrixFromCSV(trans_B2A);
-      // adjustTransformation(transform_result_B2A);
+      adjustTransformation(transform_result_B2A);
 
       // cout << "transform_result_B2A: \n"
       //      << transform_result_B2A << endl;
@@ -240,7 +236,7 @@ void distributedMapping::publishGlobalMap()
       // ROS_WARN("robot_id:%s", std::to_string(id_).c_str());
       // 设置一个转换函数用于pcl::transformPointCloud
       transform_result_C2A = readMatrixFromCSV(trans_C2A);
-      // adjustTransformation(transform_result_C2A);
+      adjustTransformation(transform_result_C2A);
       // cout << "transform_result_C2A: \n"
       //      << transform_result_C2A << endl;
       pcl::transformPointCloud(*global_map_keyframes_rgb, *global_map_keyframes_rgb, transform_result_C2A);
@@ -289,42 +285,42 @@ void distributedMapping::publishGlobalMap()
           writer_multiple_xyzrgb.writeBinary(file_path + "/" + file_name_xyzrgb_c, *globalMap_High_Color_save);
         }
         ROS_WARN("robot:%s的地图保存", std::to_string(id_).c_str());
-
       }
-      if (id_ == 0)
+      if (0)
       {
-// 创建点云指针
-      pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_a(new pcl::PointCloud<pcl::PointXYZRGB>);
-      pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_b(new pcl::PointCloud<pcl::PointXYZRGB>);
-      pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_c(new pcl::PointCloud<pcl::PointXYZRGB>);
-      pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_merged(new pcl::PointCloud<pcl::PointXYZRGB>);
-      // ROS_INFO("地图文件存储路径：%s", file_path.c_str());
-      mutex_xyzRGB.lock();
-      // 读取点云数据
-      if (pcl::io::loadPCDFile<pcl::PointXYZRGB>(file_path + "/" + file_name_xyzrgb_a, *cloud_a) == -1)
-      {
-        PCL_ERROR("Couldn't read file globalMap_High_xyzrgb_a.pcd \n");
-        return;
-      }
-      if (pcl::io::loadPCDFile<pcl::PointXYZRGB>(file_path + "/" + file_name_xyzrgb_b, *cloud_b) == -1)
-      {
-        PCL_ERROR("Couldn't read file globalMap_High_xyzrgb_b.pcd \n");
-        return;
-      }
-      if (pcl::io::loadPCDFile<pcl::PointXYZRGB>(file_path + "/" + file_name_xyzrgb_c, *cloud_c) == -1)
-      {
-        PCL_ERROR("Couldn't read file globalMap_High_xyzrgb_c.pcd \n");
-        return;
-      }
+        // 创建点云指针
+        pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_a(new pcl::PointCloud<pcl::PointXYZRGB>);
+        pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_b(new pcl::PointCloud<pcl::PointXYZRGB>);
+        pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_c(new pcl::PointCloud<pcl::PointXYZRGB>);
+        pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_merged(new pcl::PointCloud<pcl::PointXYZRGB>);
+        // ROS_INFO("地图文件存储路径：%s", file_path.c_str());
+        mutex_xyzRGB.lock();
+        // 读取点云数据
+        if (pcl::io::loadPCDFile<pcl::PointXYZRGB>(file_path + "/" + file_name_xyzrgb_a, *cloud_a) == -1)
+        {
+          PCL_ERROR("Couldn't read file globalMap_High_xyzrgb_a.pcd \n");
+          return;
+        }
+        if (pcl::io::loadPCDFile<pcl::PointXYZRGB>(file_path + "/" + file_name_xyzrgb_b, *cloud_b) == -1)
+        {
+          PCL_ERROR("Couldn't read file globalMap_High_xyzrgb_b.pcd \n");
+          return;
+        }
+        if (pcl::io::loadPCDFile<pcl::PointXYZRGB>(file_path + "/" + file_name_xyzrgb_c, *cloud_c) == -1)
+        {
+          PCL_ERROR("Couldn't read file globalMap_High_xyzrgb_c.pcd \n");
+          return;
+        }
 
-      // 合并点云
-      *cloud_merged = *cloud_a + *cloud_b + *cloud_c;
+        // 合并点云
+        *cloud_merged = *cloud_a + *cloud_b + *cloud_c;
 
-      // 保存合并后的点云到文件
-      pcl::io::savePCDFileASCII(file_name_xyzrgb, *cloud_merged);
-      std::cout << "Saved merged cloud to " << file_name_xyzrgb << std::endl;
+        // 保存合并后的点云到文件
+        pcl::io::savePCDFileASCII(file_name_xyzrgb, *cloud_merged);
+        std::cout << "Saved merged cloud to " << file_name_xyzrgb << std::endl;
 
-      mutex_xyzRGB.unlock();      }
+        mutex_xyzRGB.unlock();
+      }
 
       flg_rgb_map_save = false;
     }

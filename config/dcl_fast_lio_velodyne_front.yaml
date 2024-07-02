@@ -14,15 +14,15 @@ dcl_slam: {
   mapping_process_interval: 0.02,         # interval of optmization (in second)
 
   # keyframe params
-  keyframe_distance_threshold: 1.0,       # keyframe distance threshold (in meter)
-  keyframe_angle_threshold: 0.2,          # keyframe angle threshold (in rad)
+  keyframe_distance_threshold: 0.2,       # keyframe distance threshold (in meter)
+  keyframe_angle_threshold: 0.05,          # keyframe angle threshold (in rad)
 
   # mapping
   global_optmization_enable: true,        # enable distributed DGS
   use_between_noise: true,                # use between noise flag
   optmization_maximum_iteration: 30,      # maximum iterations time of optimization
   use_pcm: true,                          # enable pairwise consistency maximization (with descriptor_distance_threshold=0.5)
-  pcm_threshold: 0.75,                     # confidence probability for PCM (i.e., 0.01, 0.05, 0.1, 0.25, 0.5, 0.75)
+  pcm_threshold: 0.5,                     # confidence probability for PCM (i.e., 0.01, 0.05, 0.1, 0.25, 0.5, 0.75)
 
   # downsample
   descript_leaf_size: 0.1,                # descriptor downsample rate (default 0.1)

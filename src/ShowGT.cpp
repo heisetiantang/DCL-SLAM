@@ -48,6 +48,12 @@ std::condition_variable sig_buffer; // 终止信号
 bool flg_stop = false;              // 程序退出标志位
 bool time_count = false;            // 每隔10秒输出一个标志位
 
+// 停止更新矩阵
+bool flg_B2A_trans_update = true;
+bool flg_C2A_trans_update = true;
+float previous_score_B2A = 999.0; // 初始设为1.0，表示第一次迭代时肯定会被新分数覆盖
+float previous_score_C2A = 999.0;
+
 // 定义变换矩阵的保存位置
 #define DIR_OUTPUT std::getenv("HOME") + std::string("/out/dcl_output")
 std::string trans_B2A = DIR_OUTPUT + "/trans_B2A.csv";
@@ -90,6 +96,22 @@ void writeMatrixToCSV(const std::string &filename, const Eigen::Matrix4f &matrix
     else
     {
         std::cerr << "无法打开文件进行写入: " << filename << std::endl;
+    }
+}
+// 清空文件内容
+void clearFile(const std::string &filename)
+{
+    // 以输出模式打开文件并清空内容
+    std::ofstream file(filename, std::ios::out);
+    if (file.is_open())
+    {
+        file.close();
+        // 输出提示信息
+        std::cout << "文件已清空" << std::endl;
+    }
+    else
+    {
+        std::cerr << "无法打开文件: " << filename << std::endl;
     }
 }
 
@@ -136,7 +158,7 @@ bool createFile(const std::string &filename)
 // 程序终止进程
 void Stop_flg(int sig)
 {
-    ROS_WARN("process stop!");
+    // ROS_WARN("process stop!");
     flg_stop = true;
 }
 
@@ -173,17 +195,30 @@ void Callback(const sensor_msgs::PointCloud2ConstPtr &pointMsgXYZI_A,
 
     if (!cloud_temp_a->empty() && !cloud_temp_b->empty() && !cloud_temp_c->empty())
     {
-        ROS_INFO("B2A  &&  C2A ");
+        // ROS_INFO("B2A  &&  C2A ");
 
         // 从b到a的变换矩阵
         result_B2A = init_guess_Get(1);
         result_B2A = NDTMatching_M(cloud_temp_b, cloud_temp_a, result_B2A);
         // result_B2A_pre = result_B2A;
         float score_B2A = getScore(1);
-        if (score_B2A < 0.5)
+        if (score_B2A < 0.1)
         {
+            clearFile(trans_B2A);
+            ROS_INFO("最终B2A score: %f", score_B2A);
+            writeMatrixToCSV(trans_B2A, result_B2A);
+            flg_B2A_trans_update = false;
+        }
+        else if (score_B2A < 0.5 && score_B2A < previous_score_B2A && flg_B2A_trans_update)
+        {
+            clearFile(trans_B2A);
             ROS_INFO("写入B2A score: %f", score_B2A);
             writeMatrixToCSV(trans_B2A, result_B2A);
+            previous_score_B2A = score_B2A;
+        }
+        else
+        {
+            ROS_INFO("舍弃B2A");
         }
 
         // 从c到a的变换矩阵
@@ -191,14 +226,24 @@ void Callback(const sensor_msgs::PointCloud2ConstPtr &pointMsgXYZI_A,
         result_C2A = NDTMatching_M(cloud_temp_c, cloud_temp_a, result_C2A);
         result_C2A_pre = result_C2A;
         float score_C2A = getScore(2);
-
-        if (score_C2A < 0.5)
+        if (score_C2A < 0.1)
         {
+            clearFile(trans_C2A);
+            ROS_INFO("最终C2A score: %f", score_C2A);
+            writeMatrixToCSV(trans_C2A, result_C2A);
+            flg_C2A_trans_update = false;
+        }
+        else if (score_C2A < 0.5 && score_C2A < previous_score_C2A && flg_C2A_trans_update)
+        {
+            clearFile(trans_C2A);
             ROS_INFO("写入C2A score: %f", score_C2A);
             writeMatrixToCSV(trans_C2A, result_C2A);
+            previous_score_C2A = score_C2A;
         }
-
-        return;
+        else
+        {
+            ROS_INFO("舍弃C2A");
+        }
     }
 
     /*     if (!cloud_temp_a->empty() && !cloud_temp_b->empty())
@@ -285,6 +330,11 @@ int main(int argc, char **argv)
     while (!flg_stop && ros::ok())
     {
         ros::spinOnce();
+        if (!flg_B2A_trans_update && !flg_C2A_trans_update)
+        {
+            flg_stop = true;
+            return;
+        }
     }
 
     // 正常退出程序
