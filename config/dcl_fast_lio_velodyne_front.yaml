@@ -14,8 +14,8 @@ dcl_slam: {
   mapping_process_interval: 0.02,         # interval of optmization (in second)
 
   # keyframe params
-  keyframe_distance_threshold: 0.2,       # keyframe distance threshold (in meter)
-  keyframe_angle_threshold: 0.05,          # keyframe angle threshold (in rad)
+  keyframe_distance_threshold: 0.01,       # keyframe distance threshold (in meter)
+  keyframe_angle_threshold: 0.01,          # keyframe angle threshold (in rad)
 
   # mapping
   global_optmization_enable: true,        # enable distributed DGS
