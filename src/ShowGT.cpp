@@ -333,7 +333,7 @@ int main(int argc, char **argv)
         if (!flg_B2A_trans_update && !flg_C2A_trans_update)
         {
             flg_stop = true;
-            return;
+            break;
         }
     }
 
