@@ -2,6 +2,9 @@
 #include "ndt_match.h"
 #include <csignal>
 #include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
+#include <pcl/io/ply_io.h>
+
 bool flg_rgb_map_save = false;
 bool flg_merge_map = false;
 std::chrono::system_clock::time_point single_time = std::chrono::system_clock::now();
@@ -24,14 +27,13 @@ std::mutex mutex_xyzI, mutex_xyzRGB;
 Eigen::Matrix4f transform_result_B2A = Eigen::Matrix4f::Identity();
 Eigen::Matrix4f transform_result_C2A = Eigen::Matrix4f::Identity();
 
-// 程序终止进程
-void Stop_flg(int sig)
-{
-  ROS_WARN("process stop!");
-  // 调用global_map_keyframes_rgb
-  //  输出rgb地图
-  // flg_rgb_map_save = true;
-}
+// 创建点云指针
+pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_a(new pcl::PointCloud<pcl::PointXYZRGB>);
+pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_b(new pcl::PointCloud<pcl::PointXYZRGB>);
+pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_c(new pcl::PointCloud<pcl::PointXYZRGB>);
+pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_merged(new pcl::PointCloud<pcl::PointXYZRGB>);
+
+void Stop_flg(int sig);
 
 // 接收结果
 Eigen::Matrix4f readMatrixFromCSV(const std::string &filename)
@@ -87,7 +89,7 @@ void distributedMapping::globalMapThread()
 
     if (std::chrono::system_clock::now() >= single_time)
     {
-      single_time = std::chrono::system_clock::now() + std::chrono::seconds(30);
+      single_time = std::chrono::system_clock::now() + std::chrono::seconds(25);
       flg_rgb_map_save = true;
     }
 
@@ -266,36 +268,33 @@ void distributedMapping::publishGlobalMap()
     signal(SIGINT, Stop_flg);
     if (flg_rgb_map_save)
     {
-
       if (global_map_keyframes_rgb->size() > 0)
       {
         if (id_ == 0)
         {
-          pcl::PointCloud<pcl::PointXYZRGB>::Ptr globalMap_High_Color_save(new pcl::PointCloud<pcl::PointXYZRGB>());
-          pcl::copyPointCloud(*global_map_keyframes_rgb, *globalMap_High_Color_save);
+          // pcl::PointCloud<pcl::PointXYZRGB>::Ptr globalMap_High_Color_save(new pcl::PointCloud<pcl::PointXYZRGB>());
+          // pcl::copyPointCloud(*global_map_keyframes_rgb, *globalMap_High_Color_save);
           pcl::PCDWriter writer_multiple_xyzrgb;
-          writer_multiple_xyzrgb.writeBinary(file_path + "/" + file_name_xyzrgb_a, *globalMap_High_Color_save);
+          writer_multiple_xyzrgb.writeBinary(file_path + "/" + file_name_xyzrgb_a, *global_map_keyframes_rgb);
         }
         if (id_ == 1)
         {
 
-          pcl::PointCloud<pcl::PointXYZRGB>::Ptr globalMap_High_Color_save(new pcl::PointCloud<pcl::PointXYZRGB>());
-          pcl::copyPointCloud(*global_map_keyframes_rgb, *globalMap_High_Color_save);
+          // pcl::PointCloud<pcl::PointXYZRGB>::Ptr globalMap_High_Color_save(new pcl::PointCloud<pcl::PointXYZRGB>());
+          // pcl::copyPointCloud(*global_map_keyframes_rgb, *globalMap_High_Color_save);
           pcl::PCDWriter writer_multiple_xyzrgb;
-          writer_multiple_xyzrgb.writeBinary(file_path + "/" + file_name_xyzrgb_b, *globalMap_High_Color_save);
+          writer_multiple_xyzrgb.writeBinary(file_path + "/" + file_name_xyzrgb_b, *global_map_keyframes_rgb);
         }
         if (id_ == 2)
         {
 
-          pcl::PointCloud<pcl::PointXYZRGB>::Ptr globalMap_High_Color_save(new pcl::PointCloud<pcl::PointXYZRGB>());
-          pcl::copyPointCloud(*global_map_keyframes_rgb, *globalMap_High_Color_save);
+          // pcl::PointCloud<pcl::PointXYZRGB>::Ptr globalMap_High_Color_save(new pcl::PointCloud<pcl::PointXYZRGB>());
+          // pcl::copyPointCloud(*global_map_keyframes_rgb, *globalMap_High_Color_save);
           pcl::PCDWriter writer_multiple_xyzrgb;
-          writer_multiple_xyzrgb.writeBinary(file_path + "/" + file_name_xyzrgb_c, *globalMap_High_Color_save);
+          writer_multiple_xyzrgb.writeBinary(file_path + "/" + file_name_xyzrgb_c, *global_map_keyframes_rgb);
         }
         ROS_WARN("robot:%s的地图保存", std::to_string(id_).c_str());
       }
-
-
       flg_rgb_map_save = false;
     }
 
@@ -304,11 +303,6 @@ void distributedMapping::publishGlobalMap()
     {
       if (id_ == 0)
       {
-        // 创建点云指针
-        pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_a(new pcl::PointCloud<pcl::PointXYZRGB>);
-        pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_b(new pcl::PointCloud<pcl::PointXYZRGB>);
-        pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_c(new pcl::PointCloud<pcl::PointXYZRGB>);
-        pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_merged(new pcl::PointCloud<pcl::PointXYZRGB>);
         // ROS_INFO("地图文件存储路径：%s", file_path.c_str());
         mutex_xyzRGB.lock();
         // 读取点云数据
@@ -333,13 +327,13 @@ void distributedMapping::publishGlobalMap()
 
         // 保存合并后的点云到文件
         pcl::io::savePCDFileASCII(file_path + "/" + file_name_xyzrgb, *cloud_merged);
+
         std::cout << "Saved merged cloud to " << file_name_xyzrgb << std::endl;
 
         mutex_xyzRGB.unlock();
         flg_merge_map = false;
       }
     }
-  
   }
 }
 
@@ -410,4 +404,13 @@ void distributedMapping::publishLoopClosureConstraint()
   markers_array.markers.push_back(nodes);
   markers_array.markers.push_back(constraints);
   pub_loop_closure_constraints.publish(markers_array);
+}
+
+// 程序终止进程
+void Stop_flg(int sig)
+{
+  ROS_WARN("process stop!");
+  // 调用global_map_keyframes_rgb
+  //  输出rgb地图
+  // flg_rgb_map_save = true;
 }
