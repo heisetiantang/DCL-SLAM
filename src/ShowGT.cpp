@@ -54,6 +54,9 @@ bool flg_C2A_trans_update = true;
 float previous_score_B2A = 999.0; // 初始设为1.0，表示第一次迭代时肯定会被新分数覆盖
 float previous_score_C2A = 999.0;
 
+static bool is_C2A_optimal = false; // 新增标志位，用于判断是否已经找到最佳分数的C2A变换矩阵
+static bool is_B2A_optimal = false;
+
 // 定义变换矩阵的保存位置
 #define DIR_OUTPUT std::getenv("HOME") + std::string("/out/dcl_output")
 std::string trans_B2A = DIR_OUTPUT + "/trans_B2A.csv";
@@ -162,25 +165,26 @@ void Stop_flg(int sig)
     flg_stop = true;
 }
 
-void Callback(const sensor_msgs::PointCloud2ConstPtr &pointMsgXYZI_A,
-              const sensor_msgs::PointCloud2ConstPtr &pointMsgXYZI_B,
-              const sensor_msgs::PointCloud2ConstPtr &pointMsgXYZI_C)
+void Callback_ABC(const sensor_msgs::PointCloud2ConstPtr &pointMsgXYZI_A,
+                  const sensor_msgs::PointCloud2ConstPtr &pointMsgXYZI_B,
+                  const sensor_msgs::PointCloud2ConstPtr &pointMsgXYZI_C)
 {
+    // ROS_INFO("B2A  &&  C2A ");
+
     // ROS_INFO("接收到数据");
     pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_temp_a(new pcl::PointCloud<pcl::PointXYZI>());
-    if (!pointMsgXYZI_A->width == 0)
+    if (pointMsgXYZI_A->width != 0)
         pcl::fromROSMsg(*pointMsgXYZI_A, *cloud_temp_a);
     pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_temp_b(new pcl::PointCloud<pcl::PointXYZI>());
-    if (!pointMsgXYZI_B->width == 0)
+    if (pointMsgXYZI_B->width != 0)
         pcl::fromROSMsg(*pointMsgXYZI_B, *cloud_temp_b);
     pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_temp_c(new pcl::PointCloud<pcl::PointXYZI>());
-    if (!pointMsgXYZI_C->width == 0)
+    if (pointMsgXYZI_C->width != 0)
         pcl::fromROSMsg(*pointMsgXYZI_C, *cloud_temp_c);
 
     // 对于点云进行滤波处理
     pcl::VoxelGrid<pcl::PointXYZI> voxel_grid_filter;
     voxel_grid_filter.setLeafSize(0.2, 0.2, 0.2);
-
     voxel_grid_filter.setInputCloud(cloud_temp_a);
     voxel_grid_filter.filter(*cloud_temp_a);
     voxel_grid_filter.setInputCloud(cloud_temp_b);
@@ -190,26 +194,26 @@ void Callback(const sensor_msgs::PointCloud2ConstPtr &pointMsgXYZI_A,
 
     if (cloud_temp_a->empty() && cloud_temp_b->empty() && cloud_temp_c->empty())
     {
+        ROS_ERROR("点云为空");
         return;
     }
 
-    if (!cloud_temp_a->empty() && !cloud_temp_b->empty() && !cloud_temp_c->empty())
+    if (!is_B2A_optimal)
     {
-        // ROS_INFO("B2A  &&  C2A ");
-
         // 从b到a的变换矩阵
         result_B2A = init_guess_Get(1);
         result_B2A = NDTMatching_M(cloud_temp_b, cloud_temp_a, result_B2A);
         // result_B2A_pre = result_B2A;
         float score_B2A = getScore(1);
-        if (score_B2A < 0.1)
+        if (score_B2A < 0.05)
         {
             clearFile(trans_B2A);
             ROS_INFO("最终B2A score: %f", score_B2A);
             writeMatrixToCSV(trans_B2A, result_B2A);
-            flg_B2A_trans_update = false;
+            // flg_B2A_trans_update = false;
+            is_B2A_optimal = true; // 设置标志位，表示已经找到最佳分数
         }
-        else if (score_B2A < 0.5 && score_B2A < previous_score_B2A && flg_B2A_trans_update)
+        else if (score_B2A < 0.5 && score_B2A < previous_score_B2A)
         {
             clearFile(trans_B2A);
             ROS_INFO("写入B2A score: %f", score_B2A);
@@ -220,20 +224,27 @@ void Callback(const sensor_msgs::PointCloud2ConstPtr &pointMsgXYZI_A,
         {
             ROS_INFO("舍弃B2A");
         }
+    }
+    else
+    {
+        ROS_INFO("已找到最佳B2A score，不再写入");
+    }
 
+    if (!is_C2A_optimal)
+    {
         // 从c到a的变换矩阵
         result_C2A = init_guess_Get(2);
         result_C2A = NDTMatching_M(cloud_temp_c, cloud_temp_a, result_C2A);
-        result_C2A_pre = result_C2A;
         float score_C2A = getScore(2);
-        if (score_C2A < 0.1)
+
+        if (score_C2A < 0.05)
         {
             clearFile(trans_C2A);
-            ROS_INFO("最终C2A score: %f", score_C2A);
+            ROS_INFO("最佳C2A score: %f", score_C2A);
             writeMatrixToCSV(trans_C2A, result_C2A);
-            flg_C2A_trans_update = false;
+            is_C2A_optimal = true; // 设置标志位，表示已经找到最佳分数
         }
-        else if (score_C2A < 0.5 && score_C2A < previous_score_C2A && flg_C2A_trans_update)
+        else if (score_C2A < 0.5 && score_C2A < previous_score_C2A)
         {
             clearFile(trans_C2A);
             ROS_INFO("写入C2A score: %f", score_C2A);
@@ -245,46 +256,60 @@ void Callback(const sensor_msgs::PointCloud2ConstPtr &pointMsgXYZI_A,
             ROS_INFO("舍弃C2A");
         }
     }
+    else
+    {
+        ROS_INFO("已找到最佳C2A score，不再写入");
+    }
+}
 
-    /*     if (!cloud_temp_a->empty() && !cloud_temp_b->empty())
+void Callback_AB(const sensor_msgs::PointCloud2ConstPtr &pointMsgXYZI_A,
+                 const sensor_msgs::PointCloud2ConstPtr &pointMsgXYZI_B)
+{
+    pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_temp_a(new pcl::PointCloud<pcl::PointXYZI>());
+    if (pointMsgXYZI_A->width != 0)
+        pcl::fromROSMsg(*pointMsgXYZI_A, *cloud_temp_a);
+    pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_temp_b(new pcl::PointCloud<pcl::PointXYZI>());
+    if (pointMsgXYZI_B->width != 0)
+        pcl::fromROSMsg(*pointMsgXYZI_B, *cloud_temp_b);
+    pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_temp_c(new pcl::PointCloud<pcl::PointXYZI>());
+
+    pcl::VoxelGrid<pcl::PointXYZI> voxel_grid_filter;
+    voxel_grid_filter.setLeafSize(0.2, 0.2, 0.2);
+    voxel_grid_filter.setInputCloud(cloud_temp_a);
+    voxel_grid_filter.filter(*cloud_temp_a);
+    voxel_grid_filter.setInputCloud(cloud_temp_b);
+    voxel_grid_filter.filter(*cloud_temp_b);
+    if (cloud_temp_a->empty() && cloud_temp_b->empty())
+    {
+        ROS_INFO("点云为空");
+        return;
+    }
+    else
+    {
+        // 从b到a的变换矩阵
+        result_B2A = init_guess_Get(1);
+        result_B2A = NDTMatching_M(cloud_temp_b, cloud_temp_a, result_B2A);
+        // result_B2A_pre = result_B2A;
+        float score_B2A = getScore(1);
+        if (score_B2A < 0.1)
         {
-            ROS_INFO("C车点云为空");
-            result_B2A = init_guess_Get(1);
-            result_B2A = NDTMatching_M(cloud_temp_b, cloud_temp_a, result_B2A);
+            clearFile(trans_B2A);
+            ROS_INFO("最终B2A score: %f", score_B2A);
             writeMatrixToCSV(trans_B2A, result_B2A);
+            // flg_B2A_trans_update = false;
         }
-        if (!cloud_temp_a->empty() && !cloud_temp_c->empty())
+        else if (score_B2A < 0.5 && score_B2A < previous_score_B2A)
         {
-            ROS_INFO("B车点云为空");
-            result_C2A = init_guess_Get(2);
-            result_C2A = NDTMatching_M(cloud_temp_c, cloud_temp_a, result_C2A);
-            writeMatrixToCSV(trans_C2A, result_C2A);
+            clearFile(trans_B2A);
+            ROS_INFO("写入B2A score: %f", score_B2A);
+            writeMatrixToCSV(trans_B2A, result_B2A);
+            previous_score_B2A = score_B2A;
         }
-        if (!cloud_temp_b->empty() && !cloud_temp_c->empty())
+        else
         {
-            ROS_INFO("A车点云为空");
-            result_C2B = init_guess_Get(3);
-            result_C2B = NDTMatching_M(cloud_temp_c, cloud_temp_b, result_C2B);
-            writeMatrixToCSV(trans_C2B, result_C2B);
+            ROS_INFO("舍弃B2A");
         }
-     */
-    /*     if (!pointMsgXYZI_B->width == 0)
-        {
-            ROS_INFO("B fabu ");
-            // 计算机器人b到a的变换矩阵
-            result_B2A = init_guess_Get(1);
-            result_B2A = NDTMatching_M(cloud_temp_b, cloud_temp_a, result_B2A);
-        }
-
-        if (!pointMsgXYZI_C->width == 0)
-        {
-            ROS_INFO("C fabu ");
-            result_C2A = init_guess_Get(2);
-            result_C2A = NDTMatching_M(cloud_temp_c, cloud_temp_a, result_C2A);
-        }
-
-        writeMatrixToCSV(trans_B2A, result_B2A);
-        writeMatrixToCSV(trans_C2A, result_C2A); */
+    }
 }
 
 int main(int argc, char **argv)
@@ -292,7 +317,6 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "gt_map_node");
     ros::NodeHandle nh;
     setlocale(LC_ALL, "");
-
     // 判断文件夹是否存在
     if (!directoryExists(DIR_OUTPUT))
     {
@@ -306,8 +330,8 @@ int main(int argc, char **argv)
     {
         return 1;
     }
-
-    // 接收点云计算
+    // 三辆车的情况
+    ROS_INFO("plan_abc");
     message_filters::Subscriber<sensor_msgs::PointCloud2> subPointCloud_A(nh, "a/points", 1);
     message_filters::Subscriber<sensor_msgs::PointCloud2> subPointCloud_B(nh, "b/points", 1);
     message_filters::Subscriber<sensor_msgs::PointCloud2> subPointCloud_C(nh, "c/points", 1);
@@ -319,22 +343,33 @@ int main(int argc, char **argv)
 
     message_filters::Synchronizer<syncPolicy> sync(syncPolicy(10), subPointCloud_A, subPointCloud_B, subPointCloud_C);
     sync.setMaxIntervalDuration(ros::Duration(5));
-    sync.registerCallback(boost::bind(&Callback, _1, _2, _3));
+    sync.registerCallback(boost::bind(&Callback_ABC, _1, _2, _3));
 
-    // 发布计算出来的矩阵
-    // 创建一个定时器，每隔10秒触发一次
-    std::chrono::system_clock::time_point next_time = std::chrono::system_clock::now() + std::chrono::seconds(20);
+    // 两辆车的情况，不能与三辆车同时运行
+    /*         ROS_INFO("plan_ab");
+            // 接收点云计算
+            message_filters::Subscriber<sensor_msgs::PointCloud2> subPointCloud_A(nh, "a/points", 1);
+            message_filters::Subscriber<sensor_msgs::PointCloud2> subPointCloud_B(nh, "b/points", 1);
+            // 使用ApproximateTime
+            typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::PointCloud2, sensor_msgs::PointCloud2>
+                syncPolicy;
+            typedef message_filters::Synchronizer<syncPolicy> Sync;
+
+            message_filters::Synchronizer<syncPolicy> sync(syncPolicy(10), subPointCloud_A, subPointCloud_B);
+            sync.setMaxIntervalDuration(ros::Duration(5));
+            sync.registerCallback(boost::bind(&Callback_AB, _1, _2)); */
+
     // 读取键盘输入的退出指令，调用函数使得标志位flg_exit为true，结束循环
     signal(SIGINT, Stop_flg);
     ros::Rate rate(20);
     while (!flg_stop && ros::ok())
     {
         ros::spinOnce();
-        if (!flg_B2A_trans_update && !flg_C2A_trans_update)
-        {
-            flg_stop = true;
-            break;
-        }
+        // if (!flg_B2A_trans_update && !flg_C2A_trans_update)
+        // {
+        //     flg_stop = true;
+        //     break;
+        // }
     }
 
     // 正常退出程序

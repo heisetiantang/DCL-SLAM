@@ -5,6 +5,7 @@
 #include <pcl/point_types.h>
 #include <pcl/io/ply_io.h>
 
+int RobotNow = 0;
 bool flg_rgb_map_save = false;
 bool flg_merge_map = false;
 std::chrono::system_clock::time_point single_time = std::chrono::system_clock::now();
@@ -166,10 +167,13 @@ void distributedMapping::publishGlobalMap()
   // ROS_WARN("当前机器人的id：%d", id_);
   if (id_ == 0)
   {
+    RobotNow = id_;
     // ROS_INFO("a 车不动");
   }
   if (id_ == 1)
   {
+    RobotNow = id_;
+
     // ROS_INFO("b");
     // 设置一个转换函数用于pcl::transformPointCloud
     transform_result_B2A = readMatrixFromCSV(trans_B2A);
@@ -181,6 +185,8 @@ void distributedMapping::publishGlobalMap()
   }
   if (id_ == 2)
   {
+    RobotNow = id_;
+
     // ROS_INFO("c");
     // 设置一个转换函数用于pcl::transformPointCloud
     transform_result_C2A = readMatrixFromCSV(trans_C2A);
@@ -324,11 +330,16 @@ void distributedMapping::publishGlobalMap()
 
         // 合并点云
         *cloud_merged = *cloud_a + *cloud_b + *cloud_c;
-
         // 保存合并后的点云到文件
-        pcl::io::savePCDFileASCII(file_path + "/" + file_name_xyzrgb, *cloud_merged);
-
-        std::cout << "Saved merged cloud to " << file_name_xyzrgb << std::endl;
+        try
+        {
+          pcl::io::savePCDFileBinaryCompressed(file_path + "/" + file_name_xyzrgb, *cloud_merged);
+          std::cout << "Saved merged cloud to " << file_name_xyzrgb << std::endl;
+        }
+        catch (const pcl::IOException &e)
+        {
+          std::cerr << "Error saving merged cloud to " << file_name_xyzrgb << ": " << e.what() << std::endl;
+        }
 
         mutex_xyzRGB.unlock();
         flg_merge_map = false;
@@ -409,8 +420,57 @@ void distributedMapping::publishLoopClosureConstraint()
 // 程序终止进程
 void Stop_flg(int sig)
 {
-  ROS_WARN("process stop!");
-  // 调用global_map_keyframes_rgb
-  //  输出rgb地图
-  // flg_rgb_map_save = true;
+
+  if (RobotNow == 0)
+  {
+    ROS_WARN("process stop!");
+    // ROS_INFO("地图文件存储路径：%s", file_path.c_str());
+    mutex_xyzRGB.lock();
+    // 读取点云数据
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGB>(file_path + "/" + file_name_xyzrgb_a, *cloud_a) == -1)
+    {
+      PCL_ERROR("Couldn't read file globalMap_High_xyzrgb_a.pcd \n");
+      std::this_thread::sleep_for(std::chrono::seconds(2)); // 等待两秒
+      if (pcl::io::loadPCDFile<pcl::PointXYZRGB>(file_path + "/" + file_name_xyzrgb_a, *cloud_a) == -1)
+      {
+        PCL_ERROR("Couldn't read file globalMap_High_xyzrgb_a.pcd after retry \n");
+        return;
+      }
+    }
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGB>(file_path + "/" + file_name_xyzrgb_b, *cloud_b) == -1)
+    {
+      PCL_ERROR("Couldn't read file globalMap_High_xyzrgb_b.pcd \n");
+      std::this_thread::sleep_for(std::chrono::seconds(2)); // 等待两秒
+      if (pcl::io::loadPCDFile<pcl::PointXYZRGB>(file_path + "/" + file_name_xyzrgb_b, *cloud_b) == -1)
+      {
+        PCL_ERROR("Couldn't read file globalMap_High_xyzrgb_b.pcd after retry \n");
+        return;
+      }
+    }
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGB>(file_path + "/" + file_name_xyzrgb_c, *cloud_c) == -1)
+    {
+      PCL_ERROR("Couldn't read file globalMap_High_xyzrgb_c.pcd \n");
+      std::this_thread::sleep_for(std::chrono::seconds(2)); // 等待两秒
+      if (pcl::io::loadPCDFile<pcl::PointXYZRGB>(file_path + "/" + file_name_xyzrgb_c, *cloud_c) == -1)
+      {
+        PCL_ERROR("Couldn't read file globalMap_High_xyzrgb_c.pcd after retry \n");
+        return;
+      }
+    }
+
+    // 合并点云
+    *cloud_merged = *cloud_a + *cloud_b + *cloud_c;
+    // 保存合并后的点云到文件
+    try
+    {
+      pcl::io::savePCDFileBinaryCompressed(file_path + "/" + file_name_xyzrgb, *cloud_merged);
+      std::cout << "Saved merged cloud to " << file_name_xyzrgb << std::endl;
+    }
+    catch (const pcl::IOException &e)
+    {
+      std::cerr << "Error saving merged cloud to " << file_name_xyzrgb << ": " << e.what() << std::endl;
+    }
+
+    mutex_xyzRGB.unlock();
+  }
 }
