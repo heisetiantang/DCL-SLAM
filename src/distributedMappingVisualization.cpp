@@ -6,6 +6,7 @@
 #include <pcl/io/ply_io.h>
 
 int RobotNow = 0;
+int mapNumber = 0;
 bool flg_rgb_map_save = false;
 bool flg_merge_map = false;
 std::chrono::system_clock::time_point single_time = std::chrono::system_clock::now();
@@ -13,11 +14,11 @@ std::chrono::system_clock::time_point merge_time = std::chrono::system_clock::no
 
 #define DIR_OUTPUT std::getenv("HOME") + std::string("/out/dcl_output")
 std::string file_path = std::getenv("HOME") + std::string("/out/map");
-std::string file_name_xyzrgb = "globalMap_High_xyzrgb.pcd";
+std::string file_name_xyzrgb = "xyzrgb.pcd";
 std::string file_name_xyzrgb_a = "globalMap_High_xyzrgb_a.pcd";
 std::string file_name_xyzrgb_b = "globalMap_High_xyzrgb_b.pcd";
 std::string file_name_xyzrgb_c = "globalMap_High_xyzrgb_c.pcd";
-std::string file_name_xyzi = "globalMap_High_xyzi.pcd";
+// std::string file_name_xyzi = "globalMap_High_xyzi.pcd";
 
 std::string trans_B2A = DIR_OUTPUT + "/trans_B2A.csv";
 std::string trans_C2A = DIR_OUTPUT + "/trans_C2A.csv";
@@ -278,24 +279,18 @@ void distributedMapping::publishGlobalMap()
       {
         if (id_ == 0)
         {
-          // pcl::PointCloud<pcl::PointXYZRGB>::Ptr globalMap_High_Color_save(new pcl::PointCloud<pcl::PointXYZRGB>());
-          // pcl::copyPointCloud(*global_map_keyframes_rgb, *globalMap_High_Color_save);
           pcl::PCDWriter writer_multiple_xyzrgb;
           writer_multiple_xyzrgb.writeBinary(file_path + "/" + file_name_xyzrgb_a, *global_map_keyframes_rgb);
         }
         if (id_ == 1)
         {
 
-          // pcl::PointCloud<pcl::PointXYZRGB>::Ptr globalMap_High_Color_save(new pcl::PointCloud<pcl::PointXYZRGB>());
-          // pcl::copyPointCloud(*global_map_keyframes_rgb, *globalMap_High_Color_save);
           pcl::PCDWriter writer_multiple_xyzrgb;
           writer_multiple_xyzrgb.writeBinary(file_path + "/" + file_name_xyzrgb_b, *global_map_keyframes_rgb);
         }
         if (id_ == 2)
         {
 
-          // pcl::PointCloud<pcl::PointXYZRGB>::Ptr globalMap_High_Color_save(new pcl::PointCloud<pcl::PointXYZRGB>());
-          // pcl::copyPointCloud(*global_map_keyframes_rgb, *globalMap_High_Color_save);
           pcl::PCDWriter writer_multiple_xyzrgb;
           writer_multiple_xyzrgb.writeBinary(file_path + "/" + file_name_xyzrgb_c, *global_map_keyframes_rgb);
         }
@@ -307,8 +302,14 @@ void distributedMapping::publishGlobalMap()
     // 合并三个机器人的地图
     if (flg_merge_map)
     {
-      if (id_ == 0)
+      // 检测文件夹是否存在
+      if (!boost::filesystem::exists(file_path + "/intermidiate"))
       {
+        boost::filesystem::create_directory(file_path + "/intermidiate");
+      }
+      // 只有a车才进行合并
+      if (id_ == 0)
+      { 
         // ROS_INFO("地图文件存储路径：%s", file_path.c_str());
         mutex_xyzRGB.lock();
         // 读取点云数据
@@ -327,20 +328,23 @@ void distributedMapping::publishGlobalMap()
           PCL_ERROR("Couldn't read file globalMap_High_xyzrgb_c.pcd \n");
           return;
         }
-
         // 合并点云
         *cloud_merged = *cloud_a + *cloud_b + *cloud_c;
         // 保存合并后的点云到文件
         try
         {
-          pcl::io::savePCDFileBinaryCompressed(file_path + "/" + file_name_xyzrgb, *cloud_merged);
-          std::cout << "Saved merged cloud to " << file_name_xyzrgb << std::endl;
+          int time_now = int(ros::Time::now().toSec());
+          std::cout << "time_now:" << time_now << std::endl;
+          std::string prefixed_file_name_xyzrgb = std::to_string(time_now)+ ".pcd";
+          pcl::io::savePCDFileBinaryCompressed(file_path + "/intermidiate/" + prefixed_file_name_xyzrgb, *cloud_merged);
+          std::cout << "Saved" << mapNumber << std::endl;
         }
         catch (const pcl::IOException &e)
         {
           std::cerr << "Error saving merged cloud to " << file_name_xyzrgb << ": " << e.what() << std::endl;
         }
 
+        mapNumber++;
         mutex_xyzRGB.unlock();
         flg_merge_map = false;
       }
